@@ -4,7 +4,7 @@ export const SITE_CONFIG = {
   description:
     'Kanpur’s trusted doorstep TV & home appliance repair center since 2014. Expert service for LED/LCD TV, Refrigerator, AC, and Washing Machine.',
   phone: '+91 90350 85031',
-  whatsapp: '+919035085031',
+  whatsapp: '+91 90058 88922',
   secondaryPhone: '+91 90058 88922',
   email: 'support@stardigital.in',
   address: 'Maqbara Gwaltoli, Near Elgin Mill, Civil Lines, Kanpur, Uttar Pradesh 208001, India',
@@ -26,7 +26,7 @@ export const SITE_CONFIG = {
 // ── WhatsApp Deep Link ─────────────────────────────────────────────────────────
 function normalizeWANumber(phone?: string): string {
   let clean = (phone || SITE_CONFIG.whatsapp).replace(/[^0-9]/g, '')
-  if (!clean) clean = '919035085031'
+  if (!clean) clean = '919005888922'
   if (clean.length === 10) clean = '91' + clean
   else if (clean.length === 11 && clean.startsWith('0')) clean = '91' + clean.slice(1)
   return clean

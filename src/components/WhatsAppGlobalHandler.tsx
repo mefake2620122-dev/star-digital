@@ -28,7 +28,7 @@ export function WhatsAppGlobalHandler() {
       // Prevent standard browser navigation to avoid redirect bounce on mobile
       e.preventDefault()
 
-      let phone = '919035085031'
+      let phone = '919005888922'
       let text = 'Hello STAR DIGITAL, I need doorstep appliance repair service in Kanpur.'
 
       try {
@@ -57,11 +57,11 @@ export function WhatsAppGlobalHandler() {
         if (textMatch) text = decodeURIComponent(textMatch[1])
       }
 
-      // Ensure 91 country code
+      // Ensure 91 country code and normalize
       phone = phone.replace(/[^0-9]/g, '')
       if (phone.length === 10) phone = '91' + phone
       else if (phone.length === 11 && phone.startsWith('0')) phone = '91' + phone.slice(1)
-      if (!phone) phone = '919035085031'
+      if (!phone || phone.includes('9035085031')) phone = '919005888922'
 
       const encodedText = encodeURIComponent(text)
       const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(

@@ -54,10 +54,10 @@ export function QuickHelpSection() {
         typeof navigator !== 'undefined' &&
         /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
       if (isMobile) {
-        window.location.href = `whatsapp://send?phone=919035085031&text=${encodeURIComponent(msg)}`
+        window.location.href = `whatsapp://send?phone=919005888922&text=${encodeURIComponent(msg)}`
       } else {
         window.open(
-          `https://web.whatsapp.com/send?phone=919035085031&text=${encodeURIComponent(msg)}`,
+          `https://web.whatsapp.com/send?phone=919005888922&text=${encodeURIComponent(msg)}`,
           '_blank',
           'noopener,noreferrer'
         )
