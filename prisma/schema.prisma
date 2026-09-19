@@ -1,0 +1,195 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  username     String?  @unique
+  email        String   @unique
+  passwordHash String
+  name         String
+  role         String   @default("ADMIN")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Service {
+  id          String            @id @default(cuid())
+  slug        String            @unique
+  name        String
+  tagline     String
+  shortDesc   String
+  description String
+  icon        String
+  image       String
+  active      Boolean           @default(true)
+  sortOrder   Int               @default(0)
+  categories  ServiceCategory[]
+  issues      ServiceIssue[]
+  requests    ServiceRequest[]
+  faqs        FAQ[]
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+}
+
+model ServiceCategory {
+  id          String   @id @default(cuid())
+  serviceId   String
+  service     Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  name        String
+  description String?
+  active      Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ServiceIssue {
+  id          String           @id @default(cuid())
+  serviceId   String
+  service     Service          @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  name        String
+  description String?
+  commonIssue Boolean          @default(true)
+  sortOrder   Int              @default(0)
+  active      Boolean          @default(true)
+  requests    ServiceRequest[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+}
+
+model ServiceArea {
+  id                   String   @id @default(cuid())
+  name                 String
+  pincode              String?
+  district             String   @default("Kanpur")
+  estimatedArrivalMins Int      @default(90)
+  active               Boolean  @default(true)
+  sortOrder            Int      @default(0)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+}
+
+model Customer {
+  id        String           @id @default(cuid())
+  name      String
+  phone     String
+  whatsapp  String?
+  email     String?
+  address   String
+  requests  ServiceRequest[]
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+}
+
+model ServiceRequest {
+  id                String        @id
+  customerId        String
+  customer          Customer      @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  serviceId         String?
+  service           Service?      @relation(fields: [serviceId], references: [id], onDelete: SetNull)
+  issueId           String?
+  issue             ServiceIssue? @relation(fields: [issueId], references: [id], onDelete: SetNull)
+  applianceType     String
+  selectedProblem   String
+  address           String
+  landmark          String?
+  preferredDate     String
+  preferredTimeSlot String
+  status            String        @default("PENDING")
+  notes             String?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+}
+
+model ContactMessage {
+  id         String   @id @default(cuid())
+  name       String
+  phone      String
+  email      String?
+  service    String?
+  message    String
+  status     String   @default("NEW")
+  adminNotes String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
+}
+
+model Review {
+  id            String   @id @default(cuid())
+  customerName  String
+  area          String
+  rating        Int      @default(5)
+  review        String
+  isPlaceholder Boolean  @default(true)
+  published     Boolean  @default(true)
+  sortOrder     Int      @default(0)
+  createdAt     DateTime @default(now())
+}
+
+model FAQ {
+  id        String   @id @default(cuid())
+  serviceId String?
+  service   Service? @relation(fields: [serviceId], references: [id], onDelete: SetNull)
+  question  String
+  answer    String
+  category  String   @default("general")
+  published Boolean  @default(true)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+}
+
+model SiteSettings {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  value       String
+  description String?
+  updatedAt   DateTime @updatedAt
+}
+
+model BusinessContact {
+  id        String   @id @default(cuid())
+  name      String   @default("STAR DIGITAL")
+  phone     String
+  whatsapp  String
+  email     String
+  address   String
+  city      String   @default("Kanpur")
+  state     String   @default("Uttar Pradesh")
+  latitude  Float    @default(26.4715)
+  longitude Float    @default(80.3490)
+  mapQuery  String   @default("Civil+Lines+Power+House+Kanpur")
+  active    Boolean  @default(true)
+  updatedAt DateTime @updatedAt
+}
+
+/// Admin-editable site content CMS — every key maps to a live website element
+model SiteContent {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  type      String   @default("text")   // "text" | "image_url" | "phone" | "url"
+  label     String
+  group     String   @default("general") // "hero" | "contact" | "footer" | "about" | "seo"
+  updatedAt DateTime @updatedAt
+}
+
+/// Gallery photos showcasing real doorstep repair work in Kanpur
+model Photo {
+  id        String   @id @default(cuid())
+  title     String
+  caption   String?
+  imageUrl  String
+  category  String   @default("repair") // "ac", "washing_machine", "refrigerator", "workshop", "repair"
+  location  String?  @default("Kanpur")
+  sortOrder Int      @default(0)
+  published Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
