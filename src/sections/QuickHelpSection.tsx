@@ -49,10 +49,19 @@ export function QuickHelpSection() {
   const handleGetHelp = () => {
     const selected = commonProblems.find((p) => p.id === selectedId)
     if (selected) {
-      const url = getWhatsAppUrl(
-        `Hello STAR DIGITAL, I have an appliance issue in Kanpur: "${selected.label}". Please share technician availability.`
-      )
-      window.location.href = url
+      const msg = `Hello STAR DIGITAL, I have an appliance issue in Kanpur: "${selected.label}". Please share technician availability.`
+      const isMobile =
+        typeof navigator !== 'undefined' &&
+        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+      if (isMobile) {
+        window.location.href = `whatsapp://send?phone=919035085031&text=${encodeURIComponent(msg)}`
+      } else {
+        window.open(
+          `https://web.whatsapp.com/send?phone=919035085031&text=${encodeURIComponent(msg)}`,
+          '_blank',
+          'noopener,noreferrer'
+        )
+      }
     }
   }
 

@@ -1,13 +1,15 @@
 'use client'
 
 import { Phone, MessageSquare } from 'lucide-react'
-import { SITE_CONFIG, getDialerUrl, getWhatsAppUrl } from '@/lib/site'
+import { SITE_CONFIG, getDialerUrl, getNativeWhatsAppUrl } from '@/lib/site'
 
 /**
  * Mobile-only sticky bottom CTA bar — hidden on sm+
  * tel: links work correctly on all iOS/Android devices.
  */
 export function MobileStickyBar() {
+  const whatsappMsg = 'Hello STAR DIGITAL, I need doorstep appliance repair in Kanpur. Please share the earliest availability.'
+
   return (
     <div className="fixed bottom-0 inset-x-0 z-50 sm:hidden bg-white/95 backdrop-blur-xl border-t border-slate-200 shadow-2xl safe-bottom">
       <div className="grid grid-cols-2 p-2 gap-2">
@@ -24,7 +26,11 @@ export function MobileStickyBar() {
         </a>
 
         <a
-          href={getWhatsAppUrl('Hello STAR DIGITAL, I need doorstep appliance repair in Kanpur. Please share the earliest availability.')}
+          href={getNativeWhatsAppUrl(whatsappMsg)}
+          onClick={(e) => {
+            e.preventDefault()
+            window.location.href = getNativeWhatsAppUrl(whatsappMsg)
+          }}
           className="flex items-center justify-center gap-2 py-3 px-3 rounded-xl bg-[#25D366] active:bg-[#20bd5a] text-white font-bold text-xs shadow-md shadow-emerald-600/25 transition-transform active:scale-95"
           aria-label="Chat on WhatsApp"
         >

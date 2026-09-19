@@ -19,10 +19,15 @@ export const metadata: Metadata = {
   },
 }
 
+import { WhatsAppGlobalHandler } from '@/components/WhatsAppGlobalHandler'
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className="min-h-screen font-sans">{children}</body>
+      <body className="min-h-screen font-sans">
+        <WhatsAppGlobalHandler />
+        {children}
+      </body>
     </html>
   )
 }
