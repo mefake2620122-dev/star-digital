@@ -14,8 +14,9 @@ const prisma = new PrismaClient({
 async function main() {
   console.log('Seeding Star Digital database...')
 
-  // 0. Default Admin User
-  const adminPasswordHash = await bcrypt.hash('admin123', 10)
+  // 0. Admin User (reads from environment if configured)
+  const initialAdminPassword = process.env.ADMIN_INITIAL_PASSWORD || 'admin123'
+  const adminPasswordHash = await bcrypt.hash(initialAdminPassword, 10)
   await prisma.user.upsert({
     where: { email: 'admin@stardigital.in' },
     update: {

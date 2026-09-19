@@ -1,6 +1,7 @@
 import { Navbar } from '@/components/Navbar'
 import { Footer } from '@/components/Footer'
 import { MobileStickyBar } from '@/components/MobileStickyBar'
+import { PageLoader } from '@/components/PageLoader'
 import { getLiveContact } from '@/lib/contact'
 import { ContactProvider } from '@/context/ContactContext'
 
@@ -12,6 +13,7 @@ export default async function MainLayout({ children }: { children: React.ReactNo
 
   return (
     <ContactProvider value={contact}>
+      <PageLoader />
       <div className="min-h-screen flex flex-col">
         <Navbar contact={contact} />
         <main className="flex-1 pb-16 sm:pb-0">{children}</main>

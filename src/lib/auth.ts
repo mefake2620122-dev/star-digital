@@ -3,6 +3,10 @@ import jwt from 'jsonwebtoken'
 
 const JWT_SECRET = process.env.JWT_SECRET || 'star-digital-super-secret-key-kanpur-2026'
 
+if (!process.env.JWT_SECRET && process.env.NODE_ENV === 'production') {
+  console.warn('⚠️ [SECURITY WARNING]: JWT_SECRET is not explicitly defined in production environment variables!')
+}
+
 export interface JWTPayload {
   id: string
   email: string

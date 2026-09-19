@@ -183,35 +183,8 @@ export function Navbar({ contact }: NavbarProps) {
 
           {/* Scrollable Middle Body */}
           <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3.5 pb-8">
-            {/* Prominent Admin Portal Card right at top */}
-            <Link
-              href="/admin"
-              onClick={() => setMobileMenuOpen(false)}
-              className="flex items-center justify-between p-3.5 rounded-2xl bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 text-white shadow-lg border border-slate-800 active:scale-[0.98] transition-all"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-red-600/20 text-red-400 flex items-center justify-center border border-red-500/30 shrink-0">
-                  <Shield className="w-5 h-5" />
-                </div>
-                <div>
-                  <div className="flex items-center gap-1.5">
-                    <p className="text-xs font-bold leading-tight">Admin Portal (CMS)</p>
-                    <span className="text-[9px] bg-red-600 text-white px-1.5 py-0.5 rounded-full uppercase font-black tracking-wider">
-                      Live
-                    </span>
-                  </div>
-                  <p className="text-[10px] text-slate-300 mt-0.5">
-                    Update Helplines, Prices &amp; Site Content
-                  </p>
-                </div>
-              </div>
-              <span className="text-xs font-bold bg-white/15 px-3 py-1.5 rounded-xl text-white shrink-0">
-                Open &rarr;
-              </span>
-            </Link>
-
             {/* Navigation Links */}
-            <div className="flex flex-col gap-1 pt-1">
+            <div className="flex flex-col gap-1">
               {navLinks.map((link) => (
                 <Link
                   key={link.path}

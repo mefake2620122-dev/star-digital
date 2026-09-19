@@ -95,7 +95,7 @@ export default function AdminLoginPage() {
                   required
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  placeholder="admin or admin@stardigital.in"
+                  placeholder="Enter username or email"
                   className="w-full pl-10 pr-3 py-2.5 text-sm rounded-xl bg-slate-50 border border-slate-200 focus:border-red-600 focus:bg-white focus:outline-none transition-all placeholder:text-slate-400 text-slate-900"
                 />
               </div>
@@ -143,8 +143,9 @@ export default function AdminLoginPage() {
           </form>
 
           <div className="mt-6 pt-5 border-t border-slate-100 text-center">
-            <p className="text-[11px] text-slate-400">
-              Default credentials: <span className="font-mono font-medium text-slate-600">admin / admin123</span>
+            <p className="text-[11px] text-slate-400 flex items-center justify-center gap-1.5">
+              <Lock className="w-3.5 h-3.5 text-slate-400" />
+              <span>Restricted access &bull; Authorized personnel only</span>
             </p>
           </div>
         </div>
