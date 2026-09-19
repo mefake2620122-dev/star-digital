@@ -14,11 +14,10 @@ export const metadata = {
 export default async function PricingPage() {
   const [contact, pricingItems] = await Promise.all([
     getLiveContact(),
-    prisma.pricingItem
-      .findMany({
-        where: { active: true },
-        orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }],
-      })
+    ((prisma as any).pricingItem?.findMany({
+      where: { active: true },
+      orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }],
+    }) || Promise.resolve([]))
       .catch(() => []),
   ])
   const faqs = [
