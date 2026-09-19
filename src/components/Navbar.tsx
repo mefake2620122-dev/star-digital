@@ -35,6 +35,7 @@ export function Navbar({ contact }: NavbarProps) {
     { name: 'Home', path: '/' },
     { name: 'Services', path: '/services' },
     { name: 'Pricing', path: '/pricing' },
+    { name: 'Reviews', path: '/reviews' },
     { name: 'Work Photos', path: '/photos' },
     { name: 'Service Areas', path: '/service-areas' },
     { name: 'About', path: '/about' },

@@ -103,7 +103,7 @@ export function Footer({ contact }: FooterProps) {
                 </Link>
               </li>
               <li>
-                <Link href="/experience" className="text-white/60 hover:text-white transition-colors">
+                <Link href="/review" className="text-white/60 hover:text-white transition-colors">
                   Rate Your Experience
                 </Link>
               </li>
