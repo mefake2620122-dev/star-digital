@@ -67,8 +67,26 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
-  .no-scrollbar::-webkit-scrollbar {
-    display: none;
+  .ease-apple {
+    transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .scroll-stagger > *:nth-child(1) { transition-delay: 60ms; }
+  .scroll-stagger > *:nth-child(2) { transition-delay: 140ms; }
+  .scroll-stagger > *:nth-child(3) { transition-delay: 220ms; }
+  .scroll-stagger > *:nth-child(4) { transition-delay: 300ms; }
+  .scroll-stagger > *:nth-child(5) { transition-delay: 380ms; }
+  .scroll-stagger > *:nth-child(6) { transition-delay: 460ms; }
+}
+
+@keyframes scrollFadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
@@ -80,3 +98,4 @@
 
 /* Selection */
 ::selection { background: #FEE2E2; color: #7F1D1D; }
+

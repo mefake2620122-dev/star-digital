@@ -11,6 +11,7 @@ import {
   MapPin,
   ShieldCheck,
 } from 'lucide-react'
+import { ScrollReveal } from '@/components/ScrollReveal'
 
 export interface ReviewItem {
   id: string
@@ -217,71 +218,78 @@ export function ReviewsClient({ initialReviews }: ReviewsClientProps) {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {filteredReviews.map((rev) => (
-            <div
+          {filteredReviews.map((rev, idx) => (
+            <ScrollReveal
               key={rev.id}
-              className={`bg-white rounded-3xl border p-6 shadow-apple flex flex-col justify-between transition-all duration-300 hover:shadow-apple-hover hover:border-black/15 ${
-                rev.isJustAdded
-                  ? 'border-emerald-500 ring-4 ring-emerald-500/20 animate-in fade-in zoom-in-95'
-                  : 'border-black/[0.06]'
-              }`}
+              animation="fade-up"
+              delay={idx * 70}
+              duration={550}
+              className="h-full"
             >
-              <div>
-                {/* Header: Rating & Real-time badge */}
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-1 text-amber-500">
-                    {[...Array(rev.rating || 5)].map((_, i) => (
-                      <Star key={i} className="w-4 h-4 fill-current" />
-                    ))}
+              <div
+                className={`bg-white rounded-3xl border p-6 shadow-apple flex flex-col justify-between transition-all duration-300 hover:shadow-apple-hover hover:border-black/15 h-full ${
+                  rev.isJustAdded
+                    ? 'border-emerald-500 ring-4 ring-emerald-500/20 animate-in fade-in zoom-in-95'
+                    : 'border-black/[0.06]'
+                }`}
+              >
+                <div>
+                  {/* Header: Rating & Real-time badge */}
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-1 text-amber-500">
+                      {[...Array(rev.rating || 5)].map((_, i) => (
+                        <Star key={i} className="w-4 h-4 fill-current" />
+                      ))}
+                    </div>
+
+                    {rev.isJustAdded ? (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200 animate-pulse">
+                        <Sparkles className="w-3 h-3 text-emerald-600" />
+                        <span>Just Added</span>
+                      </span>
+                    ) : (
+                      <MessageSquareQuote className="w-5 h-5 text-slate-300" />
+                    )}
                   </div>
 
-                  {rev.isJustAdded ? (
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200 animate-pulse">
-                      <Sparkles className="w-3 h-3 text-emerald-600" />
-                      <span>Just Added</span>
+                  {/* Review body */}
+                  <p className="text-xs sm:text-sm text-slate-700 leading-relaxed italic mb-6">
+                    &ldquo;{rev.review}&rdquo;
+                  </p>
+                </div>
+
+                {/* Author footer */}
+                <div className="pt-4 border-t border-black/[0.06] flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <div
+                      className={`w-9 h-9 rounded-xl bg-gradient-to-tr ${getAvatarColor(
+                        rev.customerName
+                      )} text-white flex items-center justify-center font-black text-xs shadow-sm`}
+                    >
+                      {getInitials(rev.customerName)}
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-1.5">
+                        <h4 className="text-xs sm:text-sm font-bold text-slate-900">
+                          {rev.customerName}
+                        </h4>
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                      </div>
+                      <div className="flex items-center gap-1 text-[11px] text-slate-500 mt-0.5">
+                        <MapPin className="w-3 h-3 text-red-500 shrink-0" />
+                        <span className="truncate max-w-[150px]">{rev.area}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="shrink-0 text-right">
+                    <span className="text-[10px] font-semibold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">
+                      {rev.isJustAdded ? 'Today' : 'Verified'}
                     </span>
-                  ) : (
-                    <MessageSquareQuote className="w-5 h-5 text-slate-300" />
-                  )}
-                </div>
-
-                {/* Review body */}
-                <p className="text-xs sm:text-sm text-slate-700 leading-relaxed italic mb-6">
-                  &ldquo;{rev.review}&rdquo;
-                </p>
-              </div>
-
-              {/* Author footer */}
-              <div className="pt-4 border-t border-black/[0.06] flex items-center justify-between gap-3">
-                <div className="flex items-center gap-3">
-                  <div
-                    className={`w-9 h-9 rounded-xl bg-gradient-to-tr ${getAvatarColor(
-                      rev.customerName
-                    )} text-white flex items-center justify-center font-black text-xs shadow-sm`}
-                  >
-                    {getInitials(rev.customerName)}
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-1.5">
-                      <h4 className="text-xs sm:text-sm font-bold text-slate-900">
-                        {rev.customerName}
-                      </h4>
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                    </div>
-                    <div className="flex items-center gap-1 text-[11px] text-slate-500 mt-0.5">
-                      <MapPin className="w-3 h-3 text-red-500 shrink-0" />
-                      <span className="truncate max-w-[150px]">{rev.area}</span>
-                    </div>
                   </div>
                 </div>
-
-                <div className="shrink-0 text-right">
-                  <span className="text-[10px] font-semibold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">
-                    {rev.isJustAdded ? 'Today' : 'Verified'}
-                  </span>
-                </div>
               </div>
-            </div>
+            </ScrollReveal>
           ))}
         </div>
       )}

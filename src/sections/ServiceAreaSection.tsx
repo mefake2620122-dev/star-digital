@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { MapPin, ArrowRight, Check } from 'lucide-react'
 import { SITE_CONFIG } from '@/lib/site'
+import { ScrollReveal } from '@/components/ScrollReveal'
 
 export function ServiceAreaSection() {
   const primaryLocalities = [
@@ -21,47 +22,52 @@ export function ServiceAreaSection() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           {/* Left: Coverage Details */}
-          <div className="lg:col-span-5 space-y-6">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-star-50 border border-star-100 text-star-700 text-xs font-semibold">
-              <MapPin className="w-3.5 h-3.5 text-star-600" />
-              <span>Local Service Coverage</span>
-            </div>
+          <div className="lg:col-span-5">
+            <ScrollReveal animation="slide-left" duration={650}>
+              <div className="space-y-6">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-star-50 border border-star-100 text-star-700 text-xs font-semibold">
+                  <MapPin className="w-3.5 h-3.5 text-star-600" />
+                  <span>Local Service Coverage</span>
+                </div>
 
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-apple-text tracking-tight">
-              Serving Kanpur &amp; Nearby Areas
-            </h2>
+                <h2 className="text-3xl sm:text-4xl font-extrabold text-apple-text tracking-tight">
+                  Serving Kanpur &amp; Nearby Areas
+                </h2>
 
-            <p className="text-sm sm:text-base text-apple-secondary leading-relaxed">
-              Centrally based near Elgin Mill, Gwaltoli and Civil Lines in Kanpur. Our certified mobile technicians
-              are dispatched across city zones to ensure prompt doorstep arrival within 45 to 90 minutes.
-            </p>
+                <p className="text-sm sm:text-base text-apple-secondary leading-relaxed">
+                  Centrally based near Elgin Mill, Gwaltoli and Civil Lines in Kanpur. Our certified mobile technicians
+                  are dispatched across city zones to ensure prompt doorstep arrival within 45 to 90 minutes.
+                </p>
 
-            <div className="space-y-3 pt-2">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-apple-text">
-                Key Localities Covered:
-              </h4>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs sm:text-sm text-apple-secondary">
-                {primaryLocalities.map((loc, i) => (
-                  <div key={i} className="flex items-center gap-1.5">
-                    <Check className="w-4 h-4 text-star-600 shrink-0" />
-                    <span className="leading-snug">{loc}</span>
+                <div className="space-y-3 pt-2">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-apple-text">
+                    Key Localities Covered:
+                  </h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs sm:text-sm text-apple-secondary">
+                    {primaryLocalities.map((loc, i) => (
+                      <div key={i} className="flex items-center gap-1.5">
+                        <Check className="w-4 h-4 text-star-600 shrink-0" />
+                        <span className="leading-snug">{loc}</span>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-            </div>
+                </div>
 
-            <Link
-              href="/service-areas"
-              className="inline-flex items-center gap-1.5 text-sm font-semibold text-star-600 hover:text-star-700 transition-colors"
-            >
-              <span>Check Your Neighborhood Coverage</span>
-              <ArrowRight className="w-4 h-4" />
-            </Link>
+                <Link
+                  href="/service-areas"
+                  className="inline-flex items-center gap-1.5 text-sm font-semibold text-star-600 hover:text-star-700 transition-colors"
+                >
+                  <span>Check Your Neighborhood Coverage</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
+            </ScrollReveal>
           </div>
 
           {/* Right: Embedded Google Map */}
           <div className="lg:col-span-7">
-            <div className="rounded-apple-xl overflow-hidden border border-black/[0.08] shadow-apple-card bg-white">
+            <ScrollReveal animation="scale-up" duration={700}>
+              <div className="rounded-apple-xl overflow-hidden border border-black/[0.08] shadow-apple-card bg-white">
               {/* Address Header Bar */}
               <div className="p-3.5 sm:p-4 bg-slate-50 border-b border-slate-200/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                 <div className="flex items-center gap-2.5 min-w-0">
@@ -100,7 +106,8 @@ export function ServiceAreaSection() {
                 className="w-full"
               />
             </div>
-          </div>
+          </ScrollReveal>
+        </div>
         </div>
       </div>
     </section>

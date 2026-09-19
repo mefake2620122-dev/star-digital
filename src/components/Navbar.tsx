@@ -47,6 +47,17 @@ export function Navbar({ contact }: NavbarProps) {
     return pathname.startsWith(path)
   }
 
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [mobileMenuOpen])
+
   return (
     <>
       <header
@@ -73,14 +84,14 @@ export function Navbar({ contact }: NavbarProps) {
           </Link>
 
           {/* Desktop Nav */}
-          <nav className="hidden md:flex items-center gap-1.5 lg:gap-2">
+          <nav className="hidden md:flex items-center gap-1" aria-label="Main Navigation">
             {navLinks.map((link) => (
               <Link
                 key={link.path}
                 href={link.path}
-                className={`px-3 py-1.5 rounded-full text-xs lg:text-sm font-medium transition-all ${
+                className={`px-3.5 py-2 text-sm font-medium rounded-apple transition-colors ${
                   isActive(link.path)
-                    ? 'bg-star-50 text-star-600 font-semibold'
+                    ? 'text-star-600 bg-star-50 font-semibold'
                     : 'text-apple-secondary hover:text-apple-text hover:bg-black/[0.03]'
                 }`}
               >
@@ -89,14 +100,14 @@ export function Navbar({ contact }: NavbarProps) {
             ))}
           </nav>
 
-          {/* Right Actions */}
-          <div className="hidden sm:flex items-center gap-2">
+          {/* CTA Buttons */}
+          <div className="hidden sm:flex items-center gap-2.5">
             <a
-              href={getWhatsAppUrl('Hello STAR DIGITAL, I need urgent appliance repair consultation in Kanpur.', activeWhatsapp)}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs lg:text-sm font-semibold rounded-apple bg-[#25D366] text-white hover:bg-[#20bd5a] active:scale-[0.98] transition-all shadow-sm"
-              aria-label="Chat with technician on WhatsApp"
+              href={getWhatsAppUrl('Hello STAR DIGITAL, I need doorstep appliance repair service in Kanpur.', activeWhatsapp)}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs lg:text-sm font-semibold rounded-apple text-slate-700 bg-slate-100 hover:bg-slate-200 active:scale-[0.98] transition-all"
+              aria-label="Chat on WhatsApp"
             >
-              <MessageSquare className="w-4 h-4 fill-current" />
+              <MessageSquare className="w-3.5 h-3.5 text-[#25D366] fill-current" />
               <span>WhatsApp</span>
             </a>
 
@@ -132,71 +143,125 @@ export function Navbar({ contact }: NavbarProps) {
         </div>
       </header>
 
-      {/* Mobile Drawer */}
+      {/* Mobile Menu Full-Screen Sheet (Elevated above all elements including bottom bars) */}
       {mobileMenuOpen && (
         <div
-          className="md:hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm animate-fade-in"
-          onClick={() => setMobileMenuOpen(false)}
+          className="md:hidden fixed inset-0 z-[99999] bg-white flex flex-col h-[100dvh] w-full overflow-hidden animate-fade-in"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Mobile Navigation Menu"
         >
-          <div
-            className="fixed inset-x-0 top-0 bg-white border-b border-black/10 shadow-2xl p-5 pt-16 flex flex-col gap-4 animate-slide-up max-h-[90vh] overflow-y-auto"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Drawer top close button */}
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Navigation Menu</span>
-              <button
-                type="button"
-                onClick={() => setMobileMenuOpen(false)}
-                className="w-8 h-8 rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 flex items-center justify-center transition-colors"
-                aria-label="Close menu"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
+          {/* Top Bar inside Drawer */}
+          <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 bg-white/95 backdrop-blur-md shrink-0">
+            <Link
+              href="/"
+              onClick={() => setMobileMenuOpen(false)}
+              className="flex items-center gap-2.5"
+            >
+              <div className="w-8 h-8 rounded-apple bg-star-600 text-white flex items-center justify-center shadow-sm">
+                <Star className="w-4 h-4 fill-current" />
+              </div>
+              <div className="flex flex-col">
+                <span className="text-base font-black tracking-tight text-slate-900 leading-none">
+                  STAR DIGITAL
+                </span>
+                <span className="text-[9px] font-semibold text-slate-400 uppercase tracking-wider mt-0.5">
+                  Kanpur Appliance Hub
+                </span>
+              </div>
+            </Link>
 
-            <div className="flex flex-col gap-1">
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen(false)}
+              className="w-9 h-9 rounded-full bg-slate-100 active:bg-slate-200 text-slate-700 flex items-center justify-center transition-colors"
+              aria-label="Close menu"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+
+          {/* Scrollable Middle Body */}
+          <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3.5 pb-8">
+            {/* Prominent Admin Portal Card right at top */}
+            <Link
+              href="/admin"
+              onClick={() => setMobileMenuOpen(false)}
+              className="flex items-center justify-between p-3.5 rounded-2xl bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 text-white shadow-lg border border-slate-800 active:scale-[0.98] transition-all"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-red-600/20 text-red-400 flex items-center justify-center border border-red-500/30 shrink-0">
+                  <Shield className="w-5 h-5" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-1.5">
+                    <p className="text-xs font-bold leading-tight">Admin Portal (CMS)</p>
+                    <span className="text-[9px] bg-red-600 text-white px-1.5 py-0.5 rounded-full uppercase font-black tracking-wider">
+                      Live
+                    </span>
+                  </div>
+                  <p className="text-[10px] text-slate-300 mt-0.5">
+                    Update Helplines, Prices &amp; Site Content
+                  </p>
+                </div>
+              </div>
+              <span className="text-xs font-bold bg-white/15 px-3 py-1.5 rounded-xl text-white shrink-0">
+                Open &rarr;
+              </span>
+            </Link>
+
+            {/* Navigation Links */}
+            <div className="flex flex-col gap-1 pt-1">
               {navLinks.map((link) => (
                 <Link
                   key={link.path}
                   href={link.path}
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`px-4 py-3 rounded-2xl text-base font-medium transition-all ${
+                  className={`px-4 py-2.5 rounded-2xl text-sm font-semibold transition-all ${
                     isActive(link.path)
                       ? 'bg-star-50 text-star-600 font-bold'
-                      : 'text-apple-text hover:bg-slate-50'
+                      : 'text-slate-800 hover:bg-slate-50'
                   }`}
                 >
                   {link.name}
                 </Link>
               ))}
-            </div>
 
-            <div className="pt-4 border-t border-slate-100 flex flex-col gap-2.5">
-              <a
-                href={getWhatsAppUrl('Hello STAR DIGITAL, I need doorstep appliance repair service in Kanpur.', activeWhatsapp)}
-                onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-[#25D366] active:bg-[#20bd5a] text-white font-bold text-sm shadow-md"
-              >
-                <MessageSquare className="w-4 h-4 fill-current" />
-                <span>Chat on WhatsApp</span>
-              </a>
-              <a
-                href={getDialerUrl(activePhone)}
-                onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-red-600 active:bg-red-700 text-white font-bold text-sm shadow-md"
-              >
-                <Phone className="w-4 h-4 fill-current" />
-                <span>Call {activePhone}</span>
-              </a>
+              {/* Direct Admin Control Center link in list */}
               <Link
                 href="/admin"
                 onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center justify-center gap-2 py-2.5 rounded-2xl border border-slate-200 text-slate-500 text-xs font-medium hover:bg-slate-50 transition-colors"
+                className="flex items-center justify-between px-4 py-2.5 rounded-2xl text-sm font-semibold text-slate-800 bg-slate-50 hover:bg-slate-100 border border-slate-200/60 transition-all mt-1"
               >
-                <Shield className="w-3.5 h-3.5" />
-                <span>Admin Portal</span>
+                <span className="flex items-center gap-2">
+                  <Shield className="w-4 h-4 text-red-600" />
+                  <span>Admin Control Center</span>
+                </span>
+                <span className="text-[10px] font-mono text-slate-400">/admin</span>
               </Link>
+            </div>
+          </div>
+
+          {/* Fixed Drawer Bottom Bar */}
+          <div className="p-4 border-t border-slate-100 bg-white/95 backdrop-blur-md safe-bottom shrink-0 shadow-lg">
+            <div className="grid grid-cols-2 gap-2">
+              <a
+                href={getWhatsAppUrl('Hello STAR DIGITAL, I need doorstep appliance repair service in Kanpur.', activeWhatsapp)}
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center justify-center gap-2 py-3 px-3 rounded-xl bg-[#25D366] active:bg-[#20bd5a] text-white font-bold text-xs shadow-md"
+              >
+                <MessageSquare className="w-4 h-4 fill-current" />
+                <span>WhatsApp</span>
+              </a>
+
+              <a
+                href={getDialerUrl(activePhone)}
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center justify-center gap-2 py-3 px-3 rounded-xl bg-star-600 active:bg-star-700 text-white font-bold text-xs shadow-md"
+              >
+                <Phone className="w-4 h-4 fill-current" />
+                <span>Call Now</span>
+              </a>
             </div>
           </div>
         </div>

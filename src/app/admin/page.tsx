@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { getDialerUrl, getWhatsAppUrl } from '@/lib/site'
 import {
   Inbox,
   Wrench,
@@ -523,66 +524,66 @@ export default function AdminDashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-100 flex flex-col">
-      {/* Top Admin Header */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-red-600 text-white flex items-center justify-center shadow-sm">
-              <Shield className="w-5 h-5" />
+    <div className="min-h-screen bg-[#f5f5f7] flex flex-col font-sans">
+      {/* Top Admin Header - Apple Frosted Glass */}
+      <header className="bg-white/85 backdrop-blur-xl border-b border-black/[0.06] sticky top-0 z-30 shadow-apple">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between">
+          <div className="flex items-center gap-2.5 sm:gap-3">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-red-600 to-rose-700 text-white flex items-center justify-center shadow-sm shrink-0">
+              <Shield className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
             <div>
-              <div className="flex items-center gap-2">
-                <span className="font-extrabold text-slate-900 text-base">STAR DIGITAL</span>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-50 text-red-600 uppercase tracking-wider">
-                  Admin CMS
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <span className="font-extrabold text-slate-900 text-xs sm:text-base tracking-tight">STAR DIGITAL</span>
+                <span className="px-1.5 sm:px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold bg-red-50 text-red-600 uppercase tracking-wider border border-red-200/50">
+                  Admin
                 </span>
                 {currentUser?.username && (
-                  <span className="hidden sm:inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-slate-100 text-slate-700 border border-slate-200">
+                  <span className="hidden md:inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-slate-100 text-slate-700 border border-slate-200">
                     @{currentUser.username}
                   </span>
                 )}
               </div>
-              <p className="text-[11px] text-slate-400">Kanpur Doorstep Appliance Hub</p>
+              <p className="text-[10px] sm:text-[11px] text-slate-400 truncate max-w-[150px] sm:max-w-none">Kanpur Doorstep Appliance Hub</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1.5 sm:gap-2.5">
             <button
               onClick={handleRefresh}
               disabled={refreshing}
-              className="p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition-all"
+              className="p-1.5 sm:p-2 text-slate-500 hover:text-slate-900 hover:bg-black/[0.04] rounded-xl transition-all"
               title="Refresh All Data"
             >
-              <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin text-red-600' : ''}`} />
+              <RefreshCw className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${refreshing ? 'animate-spin text-red-600' : ''}`} />
             </button>
 
             <Link
               href="/"
               target="_blank"
-              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-all"
+              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-all shadow-sm"
             >
-              <span>View Live Site</span>
-              <ExternalLink className="w-3.5 h-3.5" />
+              <span>View Site</span>
+              <ExternalLink className="w-3 h-3 text-slate-400" />
             </Link>
 
             <button
               onClick={handleLogout}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-red-50 hover:text-red-600 text-xs font-semibold text-slate-700 transition-all"
+              className="inline-flex items-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-red-50 hover:text-red-600 text-xs font-semibold text-slate-700 transition-all"
             >
               <LogOut className="w-3.5 h-3.5" />
-              <span>Logout</span>
+              <span className="hidden xs:inline sm:inline">Logout</span>
             </button>
           </div>
         </div>
       </header>
 
       {/* Main Admin Body */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full flex-1">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 w-full flex-1">
         {/* Toast Alert */}
         {alertMsg && (
           <div
-            className={`mb-6 p-4 rounded-2xl flex items-center justify-between gap-3 text-xs sm:text-sm font-medium shadow-sm ${
+            className={`mb-4 sm:mb-6 p-3 sm:p-4 rounded-2xl flex items-center justify-between gap-3 text-xs sm:text-sm font-medium shadow-sm animate-in fade-in duration-200 ${
               alertMsg.type === 'success'
                 ? 'bg-emerald-50 border border-emerald-200 text-emerald-800'
                 : 'bg-red-50 border border-red-200 text-red-800'
@@ -596,22 +597,22 @@ export default function AdminDashboardPage() {
               )}
               <span>{alertMsg.text}</span>
             </div>
-            <button onClick={() => setAlertMsg(null)} className="text-slate-400 hover:text-slate-700">
+            <button onClick={() => setAlertMsg(null)} className="text-slate-400 hover:text-slate-700 text-xs">
               ✕
             </button>
           </div>
         )}
 
-        {/* Navigation Tabs */}
-        <div className="flex overflow-x-auto gap-2 pb-4 mb-6 border-b border-slate-200 scrollbar-none">
+        {/* Navigation Tabs - Apple Segmented Control */}
+        <div className="p-1 sm:p-1.5 bg-slate-200/70 backdrop-blur-md rounded-2xl flex overflow-x-auto gap-1 sm:gap-1.5 mb-5 sm:mb-8 scrollbar-none border border-black/[0.04]">
           {[
-            { id: 'cms', label: 'Website Content (CMS)', icon: LayoutTemplate, count: siteContent.length },
-            { id: 'inquiries', label: 'Customer Messages', icon: Inbox, count: inquiries.length },
-            { id: 'services', label: 'Services Directory', icon: Wrench, count: services.length },
-            { id: 'photos', label: 'Work Photos', icon: Camera, count: photos.length },
-            { id: 'areas', label: 'Kanpur Areas', icon: MapPin, count: areas.length },
-            { id: 'reviews', label: 'Reviews', icon: Star, count: reviews.length },
-            { id: 'settings', label: 'Security & Password', icon: Key },
+            { id: 'cms', label: 'Website Content', shortLabel: 'CMS', icon: LayoutTemplate, count: siteContent.length },
+            { id: 'inquiries', label: 'Customer Messages', shortLabel: 'Messages', icon: Inbox, count: inquiries.length },
+            { id: 'services', label: 'Services Directory', shortLabel: 'Services', icon: Wrench, count: services.length },
+            { id: 'photos', label: 'Work Photos', shortLabel: 'Photos', icon: Camera, count: photos.length },
+            { id: 'areas', label: 'Kanpur Areas', shortLabel: 'Areas', icon: MapPin, count: areas.length },
+            { id: 'reviews', label: 'Reviews', shortLabel: 'Reviews', icon: Star, count: reviews.length },
+            { id: 'settings', label: 'Security', shortLabel: 'Security', icon: Key },
           ].map((tab) => {
             const Icon = tab.icon
             const isActive = activeTab === tab.id
@@ -619,18 +620,19 @@ export default function AdminDashboardPage() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as TabType)}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all shadow-sm ${
+                className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all ${
                   isActive
-                    ? 'bg-red-600 text-white shadow-red-600/20 shadow-md'
-                    : 'bg-white text-slate-600 hover:bg-slate-50 border border-slate-200'
+                    ? 'bg-white text-slate-900 shadow-sm font-bold scale-[1.01]'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-white/40'
                 }`}
               >
-                <Icon className="w-4 h-4" />
-                <span>{tab.label}</span>
+                <Icon className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isActive ? 'text-red-600' : 'text-slate-500'}`} />
+                <span className="hidden sm:inline">{tab.label}</span>
+                <span className="sm:hidden">{tab.shortLabel}</span>
                 {tab.count !== undefined && (
                   <span
-                    className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                      isActive ? 'bg-white/25 text-white' : 'bg-slate-100 text-slate-600'
+                    className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
+                      isActive ? 'bg-red-50 text-red-600' : 'bg-slate-300/60 text-slate-700'
                     }`}
                   >
                     {tab.count}
@@ -645,113 +647,114 @@ export default function AdminDashboardPage() {
         {activeTab === 'cms' && (
           <div className="space-y-8">
             {/* Quick Live Contact Numbers Card */}
-            <div className="p-6 sm:p-8 rounded-3xl bg-slate-900 text-white shadow-xl border border-slate-800">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-800">
-                <div className="flex items-center gap-3.5">
-                  <div className="w-11 h-11 rounded-2xl bg-red-600/20 text-red-500 flex items-center justify-center border border-red-500/30">
-                    <Phone className="w-5 h-5" />
+            <div className="p-4 sm:p-7 rounded-2xl sm:rounded-3xl bg-slate-900 text-white shadow-xl border border-slate-800">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 sm:pb-5 border-b border-slate-800">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-red-600/20 text-red-500 flex items-center justify-center border border-red-500/30 shrink-0">
+                    <Phone className="w-4 h-4 sm:w-5 sm:h-5" />
                   </div>
                   <div>
-                    <h2 className="text-lg sm:text-xl font-extrabold text-white flex items-center gap-2">
-                      <span>Live Calling &amp; WhatsApp Helplines</span>
-                      <span className="px-2.5 py-0.5 rounded-full text-[10px] uppercase font-bold tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                    <h2 className="text-sm sm:text-lg font-extrabold text-white flex flex-wrap items-center gap-1.5 sm:gap-2">
+                      <span>Live Helplines</span>
+                      <span className="px-2 py-0.5 rounded-full text-[9px] uppercase font-bold tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
                         Live Site Sync
                       </span>
                     </h2>
-                    <p className="text-xs text-slate-400 mt-0.5">
-                      Changing numbers here updates instantly across Navbar, Sticky Mobile Bar, Hero, Buttons, and Footer.
+                    <p className="text-[10px] sm:text-xs text-slate-400 mt-0.5">
+                      Changing numbers here updates instantly across whole website &amp; dial pad.
                     </p>
                   </div>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-                <div className="space-y-2">
-                  <label className="block text-xs font-bold text-slate-300 flex items-center gap-1.5">
-                    <Phone className="w-3.5 h-3.5 text-red-400" />
-                    <span>Primary Calling Phone Number</span>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mt-4 sm:mt-6">
+                <div className="space-y-1.5">
+                  <label className="block text-[11px] sm:text-xs font-bold text-slate-300 flex items-center gap-1.5">
+                    <Phone className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-red-400" />
+                    <span>Calling Phone Number</span>
                   </label>
                   <input
                     type="text"
                     value={quickPhone}
                     onChange={(e) => setQuickPhone(e.target.value)}
                     placeholder="+91 90058 88922"
-                    className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-700 text-sm font-bold text-white focus:outline-none focus:border-red-500 transition-colors"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-800/90 border border-slate-700 text-xs sm:text-sm font-bold text-white focus:outline-none focus:border-red-500 transition-colors"
                   />
-                  <p className="text-[11px] text-slate-400">
-                    Appears on all "Call Now" buttons, phone dialer links &amp; contact sections.
+                  <p className="text-[10px] text-slate-400">
+                    Pre-filled in phone dial pad when users tap Call Now.
                   </p>
                 </div>
 
-                <div className="space-y-2">
-                  <label className="block text-xs font-bold text-slate-300 flex items-center gap-1.5">
-                    <MessageSquare className="w-3.5 h-3.5 text-emerald-400" />
-                    <span>WhatsApp Chat &amp; Booking Number</span>
+                <div className="space-y-1.5">
+                  <label className="block text-[11px] sm:text-xs font-bold text-slate-300 flex items-center gap-1.5">
+                    <MessageSquare className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-400" />
+                    <span>WhatsApp Booking Number</span>
                   </label>
                   <input
                     type="text"
                     value={quickWhatsapp}
                     onChange={(e) => setQuickWhatsapp(e.target.value)}
                     placeholder="+91 90058 88922"
-                    className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-700 text-sm font-bold text-white focus:outline-none focus:border-emerald-500 transition-colors"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-800/90 border border-slate-700 text-xs sm:text-sm font-bold text-white focus:outline-none focus:border-emerald-500 transition-colors"
                   />
-                  <p className="text-[11px] text-slate-400">
-                    Triggers direct WhatsApp app launch on mobile phones &amp; WhatsApp Web on desktop.
+                  <p className="text-[10px] text-slate-400">
+                    Direct WhatsApp app launch on mobile.
                   </p>
                 </div>
               </div>
 
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-6 pt-5 border-t border-slate-800">
-                <div className="text-xs text-slate-400 flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                  <span>Active Live Number: <strong className="text-white">{quickPhone}</strong></span>
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 mt-4 sm:mt-6 pt-4 border-t border-slate-800">
+                <div className="text-[11px] text-slate-400 flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+                  <span>Active: <strong className="text-white font-mono">{quickPhone}</strong></span>
                 </div>
 
                 <button
                   onClick={handleSaveQuickContact}
                   disabled={savingQuickContact}
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-red-600 hover:bg-red-700 active:scale-95 text-white text-xs font-bold transition-all shadow-md shadow-red-600/25 disabled:opacity-50"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 active:scale-95 text-white text-xs font-bold transition-all shadow-md shadow-red-600/25 disabled:opacity-50"
                 >
                   {savingQuickContact ? (
-                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                   ) : (
-                    <Save className="w-4 h-4" />
+                    <Save className="w-3.5 h-3.5" />
                   )}
                   <span>Update All Website Numbers</span>
                 </button>
               </div>
             </div>
-            <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-100">
+
+            <div className="bg-white p-4 sm:p-7 rounded-2xl sm:rounded-3xl border border-black/[0.06] shadow-apple">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 pb-4 sm:pb-5 border-b border-slate-100">
                 <div>
-                  <h2 className="text-xl font-bold text-slate-900">
-                    Live Website Content & Image Manager
+                  <h2 className="text-sm sm:text-lg font-bold text-slate-900">
+                    Live Website Content Manager
                   </h2>
-                  <p className="text-xs text-slate-500 mt-0.5">
-                    Update any text, image URL, phone number, or guarantee below. Click "Save Live" to immediately reflect on the website.
+                  <p className="text-[10px] sm:text-xs text-slate-500 mt-0.5">
+                    Edit text or phone numbers below. Click &quot;Save Live&quot; to instantly update the website.
                   </p>
                 </div>
               </div>
 
               {/* Group 1: Hero Section */}
-              <div className="mt-6 space-y-6">
-                <div className="flex items-center gap-2 text-sm font-bold text-red-600 uppercase tracking-wider">
-                  <LayoutTemplate className="w-4 h-4" />
+              <div className="mt-5 sm:mt-6 space-y-4 sm:space-y-5">
+                <div className="flex items-center gap-2 text-xs sm:text-sm font-bold text-red-600 uppercase tracking-wider">
+                  <LayoutTemplate className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   <span>Homepage Hero Section</span>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5">
                   {groupedCms.hero.map((item) => (
                     <div
                       key={item.key}
-                      className="p-5 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col justify-between space-y-4"
+                      className="p-3.5 sm:p-5 rounded-2xl bg-[#fbfbfd] border border-black/[0.05] shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between space-y-3"
                     >
                       <div className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <label className="text-xs font-bold text-slate-800">
+                        <div className="flex flex-wrap items-center justify-between gap-1.5">
+                          <label className="text-xs sm:text-sm font-semibold text-slate-800">
                             {item.label}
                           </label>
-                          <span className="font-mono text-[10px] text-slate-400 bg-white px-2 py-0.5 rounded-md border border-slate-200">
+                          <span className="font-mono text-[9px] sm:text-[10px] text-slate-400 bg-white px-2 py-0.5 rounded-md border border-slate-200 shrink-0">
                             {item.key}
                           </span>
                         </div>
@@ -765,10 +768,10 @@ export default function AdminDashboardPage() {
                                 setCmsEdits({ ...cmsEdits, [item.key]: e.target.value })
                               }
                               placeholder="https://..."
-                              className="w-full px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-xs font-mono focus:outline-none focus:border-red-600 text-slate-800"
+                              className="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs font-mono focus:outline-none focus:border-red-600 text-slate-800"
                             />
                             {cmsEdits[item.key] && (
-                              <div className="relative h-32 rounded-xl overflow-hidden border border-slate-200 bg-slate-900">
+                              <div className="relative h-28 sm:h-32 rounded-xl overflow-hidden border border-slate-200 bg-slate-900">
                                 <img
                                   src={cmsEdits[item.key]}
                                   alt="Preview"
@@ -778,7 +781,7 @@ export default function AdminDashboardPage() {
                                       'https://images.unsplash.com/photo-1581092921461-eab62e97a780?auto=format&fit=crop&w=600&q=80'
                                   }}
                                 />
-                                <span className="absolute bottom-2 left-2 bg-black/60 text-white text-[10px] font-semibold px-2 py-0.5 rounded backdrop-blur-sm">
+                                <span className="absolute bottom-2 left-2 bg-black/60 text-white text-[9px] sm:text-[10px] font-semibold px-2 py-0.5 rounded backdrop-blur-sm">
                                   Live Image Preview
                                 </span>
                               </div>
@@ -791,7 +794,7 @@ export default function AdminDashboardPage() {
                             onChange={(e) =>
                               setCmsEdits({ ...cmsEdits, [item.key]: e.target.value })
                             }
-                            className="w-full p-3 rounded-xl bg-white border border-slate-200 text-xs focus:outline-none focus:border-red-600 text-slate-800 leading-relaxed"
+                            className="w-full p-2.5 sm:p-3 rounded-xl bg-white border border-slate-200 text-xs focus:outline-none focus:border-red-600 text-slate-800 leading-relaxed font-medium"
                           />
                         ) : (
                           <input
@@ -800,16 +803,16 @@ export default function AdminDashboardPage() {
                             onChange={(e) =>
                               setCmsEdits({ ...cmsEdits, [item.key]: e.target.value })
                             }
-                            className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-xs focus:outline-none focus:border-red-600 text-slate-800 font-medium"
+                            className="w-full px-3 py-2 sm:py-2.5 rounded-xl bg-white border border-slate-200 text-xs focus:outline-none focus:border-red-600 text-slate-800 font-medium"
                           />
                         )}
                       </div>
 
-                      <div className="flex justify-end pt-2 border-t border-slate-200/60">
+                      <div className="flex justify-end pt-2 border-t border-slate-200/50">
                         <button
                           onClick={() => handleSaveCmsKey(item.key)}
                           disabled={savingKey === item.key}
-                          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-900 hover:bg-red-600 text-white text-xs font-bold transition-all disabled:opacity-50"
+                          className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-slate-900 hover:bg-red-600 active:scale-95 text-white text-xs font-bold transition-all disabled:opacity-50"
                         >
                           {savingKey === item.key ? (
                             <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -825,24 +828,24 @@ export default function AdminDashboardPage() {
               </div>
 
               {/* Group 2: Contact & Helpline */}
-              <div className="mt-10 pt-8 border-t border-slate-200 space-y-6">
-                <div className="flex items-center gap-2 text-sm font-bold text-red-600 uppercase tracking-wider">
-                  <Phone className="w-4 h-4" />
+              <div className="mt-8 pt-6 border-t border-slate-200 space-y-4 sm:space-y-5">
+                <div className="flex items-center gap-2 text-xs sm:text-sm font-bold text-red-600 uppercase tracking-wider">
+                  <Phone className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   <span>Helpline, WhatsApp & Hub Information</span>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5">
                   {groupedCms.contact.map((item) => (
                     <div
                       key={item.key}
-                      className="p-5 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col justify-between space-y-4"
+                      className="p-3.5 sm:p-5 rounded-2xl bg-[#fbfbfd] border border-black/[0.05] shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between space-y-3"
                     >
                       <div className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <label className="text-xs font-bold text-slate-800">
+                        <div className="flex flex-wrap items-center justify-between gap-1.5">
+                          <label className="text-xs sm:text-sm font-semibold text-slate-800">
                             {item.label}
                           </label>
-                          <span className="font-mono text-[10px] text-slate-400 bg-white px-2 py-0.5 rounded-md border border-slate-200">
+                          <span className="font-mono text-[9px] sm:text-[10px] text-slate-400 bg-white px-2 py-0.5 rounded-md border border-slate-200 shrink-0">
                             {item.key}
                           </span>
                         </div>
@@ -853,15 +856,15 @@ export default function AdminDashboardPage() {
                           onChange={(e) =>
                             setCmsEdits({ ...cmsEdits, [item.key]: e.target.value })
                           }
-                          className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-xs focus:outline-none focus:border-red-600 text-slate-800 font-medium"
+                          className="w-full px-3 py-2 sm:py-2.5 rounded-xl bg-white border border-slate-200 text-xs focus:outline-none focus:border-red-600 text-slate-800 font-medium"
                         />
                       </div>
 
-                      <div className="flex justify-end pt-2 border-t border-slate-200/60">
+                      <div className="flex justify-end pt-2 border-t border-slate-200/50">
                         <button
                           onClick={() => handleSaveCmsKey(item.key)}
                           disabled={savingKey === item.key}
-                          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-900 hover:bg-red-600 text-white text-xs font-bold transition-all disabled:opacity-50"
+                          className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-slate-900 hover:bg-red-600 active:scale-95 text-white text-xs font-bold transition-all disabled:opacity-50"
                         >
                           {savingKey === item.key ? (
                             <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -877,24 +880,24 @@ export default function AdminDashboardPage() {
               </div>
 
               {/* Group 3: General, Guarantees & Footer */}
-              <div className="mt-10 pt-8 border-t border-slate-200 space-y-6">
-                <div className="flex items-center gap-2 text-sm font-bold text-red-600 uppercase tracking-wider">
-                  <Shield className="w-4 h-4" />
+              <div className="mt-8 pt-6 border-t border-slate-200 space-y-4 sm:space-y-5">
+                <div className="flex items-center gap-2 text-xs sm:text-sm font-bold text-red-600 uppercase tracking-wider">
+                  <Shield className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   <span>Guarantees, Story & Footer Tagline</span>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5">
                   {groupedCms.general.map((item) => (
                     <div
                       key={item.key}
-                      className="p-5 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col justify-between space-y-4"
+                      className="p-3.5 sm:p-5 rounded-2xl bg-[#fbfbfd] border border-black/[0.05] shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between space-y-3"
                     >
                       <div className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <label className="text-xs font-bold text-slate-800">
+                        <div className="flex flex-wrap items-center justify-between gap-1.5">
+                          <label className="text-xs sm:text-sm font-semibold text-slate-800">
                             {item.label}
                           </label>
-                          <span className="font-mono text-[10px] text-slate-400 bg-white px-2 py-0.5 rounded-md border border-slate-200">
+                          <span className="font-mono text-[9px] sm:text-[10px] text-slate-400 bg-white px-2 py-0.5 rounded-md border border-slate-200 shrink-0">
                             {item.key}
                           </span>
                         </div>
@@ -906,7 +909,7 @@ export default function AdminDashboardPage() {
                             onChange={(e) =>
                               setCmsEdits({ ...cmsEdits, [item.key]: e.target.value })
                             }
-                            className="w-full p-3 rounded-xl bg-white border border-slate-200 text-xs focus:outline-none focus:border-red-600 text-slate-800 leading-relaxed"
+                            className="w-full p-2.5 sm:p-3 rounded-xl bg-white border border-slate-200 text-xs focus:outline-none focus:border-red-600 text-slate-800 leading-relaxed font-medium"
                           />
                         ) : (
                           <input
@@ -915,16 +918,16 @@ export default function AdminDashboardPage() {
                             onChange={(e) =>
                               setCmsEdits({ ...cmsEdits, [item.key]: e.target.value })
                             }
-                            className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-xs focus:outline-none focus:border-red-600 text-slate-800 font-medium"
+                            className="w-full px-3 py-2 sm:py-2.5 rounded-xl bg-white border border-slate-200 text-xs focus:outline-none focus:border-red-600 text-slate-800 font-medium"
                           />
                         )}
                       </div>
 
-                      <div className="flex justify-end pt-2 border-t border-slate-200/60">
+                      <div className="flex justify-end pt-2 border-t border-slate-200/50">
                         <button
                           onClick={() => handleSaveCmsKey(item.key)}
                           disabled={savingKey === item.key}
-                          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-900 hover:bg-red-600 text-white text-xs font-bold transition-all disabled:opacity-50"
+                          className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-slate-900 hover:bg-red-600 active:scale-95 text-white text-xs font-bold transition-all disabled:opacity-50"
                         >
                           {savingKey === item.key ? (
                             <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -944,22 +947,22 @@ export default function AdminDashboardPage() {
 
         {/* ── TAB 2: INQUIRIES & MESSAGES ── */}
         {activeTab === 'inquiries' && (
-          <div className="space-y-6">
-            <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="space-y-4 sm:space-y-6">
+            <div className="bg-white p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-black/[0.06] shadow-apple flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
-                <h2 className="text-xl font-bold text-slate-900">Customer Messages & Requests</h2>
-                <p className="text-xs text-slate-500 mt-0.5">
+                <h2 className="text-base sm:text-xl font-bold text-slate-900">Customer Messages</h2>
+                <p className="text-[11px] sm:text-xs text-slate-500 mt-0.5">
                   Direct inquiries received from website visitors across Kanpur.
                 </p>
               </div>
 
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 self-start sm:self-auto">
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
-                  className="px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-700"
+                  className="px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-700"
                 >
-                  <option value="ALL">All Statuses</option>
+                  <option value="ALL">All Statuses ({inquiries.length})</option>
                   <option value="NEW">New Only</option>
                   <option value="IN_PROGRESS">In Progress</option>
                   <option value="RESOLVED">Resolved</option>
@@ -968,25 +971,25 @@ export default function AdminDashboardPage() {
             </div>
 
             {inquiries.length === 0 ? (
-              <div className="bg-white p-12 text-center rounded-3xl border border-slate-200 text-slate-400">
-                <Inbox className="w-10 h-10 mx-auto mb-3 opacity-40" />
-                <p className="text-sm font-semibold">No customer inquiries yet</p>
-                <p className="text-xs">When users submit messages from the contact page, they appear here.</p>
+              <div className="bg-white p-8 sm:p-12 text-center rounded-2xl sm:rounded-3xl border border-black/[0.06] shadow-apple text-slate-400">
+                <Inbox className="w-8 h-8 sm:w-10 sm:h-10 mx-auto mb-2 opacity-40" />
+                <p className="text-xs sm:text-sm font-semibold">No customer inquiries yet</p>
+                <p className="text-[11px] text-slate-400">When users submit messages from the contact page, they appear here.</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 gap-4">
+              <div className="grid grid-cols-1 gap-3 sm:gap-4">
                 {inquiries
                   .filter((inq) => statusFilter === 'ALL' || inq.status === statusFilter)
                   .map((inq) => (
                     <div
                       key={inq.id}
-                      className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm hover:shadow-md transition-all flex flex-col sm:flex-row justify-between gap-4"
+                      className="bg-white p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-black/[0.06] shadow-apple hover:shadow-apple-hover transition-all flex flex-col sm:flex-row justify-between gap-3 sm:gap-4"
                     >
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2.5">
-                          <span className="font-bold text-slate-900 text-base">{inq.name}</span>
+                      <div className="space-y-2 flex-1">
+                        <div className="flex items-center gap-2">
+                          <span className="font-bold text-slate-900 text-sm sm:text-base">{inq.name}</span>
                           <span
-                            className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                            className={`px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold uppercase tracking-wider ${
                               inq.status === 'NEW'
                                 ? 'bg-red-50 text-red-600 border border-red-200'
                                 : inq.status === 'RESOLVED'
@@ -998,35 +1001,36 @@ export default function AdminDashboardPage() {
                           </span>
                         </div>
 
-                        <div className="flex flex-wrap items-center gap-4 text-xs text-slate-500">
+                        <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-[11px] sm:text-xs text-slate-500">
                           <span className="font-semibold text-slate-700">Phone: {inq.phone}</span>
-                          {inq.service && <span>Service: {inq.service}</span>}
+                          {inq.service && <span>• Service: {inq.service}</span>}
                           {inq.createdAt && (
-                            <span>{new Date(inq.createdAt).toLocaleDateString('en-IN')}</span>
+                            <span>• {new Date(inq.createdAt).toLocaleDateString('en-IN')}</span>
                           )}
                         </div>
 
-                        <p className="text-xs sm:text-sm text-slate-700 bg-slate-50 p-3 rounded-xl border border-slate-100">
-                          "{inq.message}"
+                        <p className="text-xs sm:text-sm text-slate-700 bg-slate-50 p-2.5 sm:p-3 rounded-xl border border-slate-100 leading-relaxed">
+                          &ldquo;{inq.message}&rdquo;
                         </p>
                       </div>
 
-                      <div className="flex sm:flex-col items-end justify-between gap-2 shrink-0">
-                        <div className="flex items-center gap-2">
+                      <div className="flex flex-wrap sm:flex-col items-center sm:items-end justify-between gap-2 shrink-0 pt-2 sm:pt-0 border-t border-slate-100 sm:border-0">
+                        <div className="flex items-center gap-1.5">
                           <a
-                            href={`tel:${inq.phone}`}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold"
+                            href={getDialerUrl(inq.phone)}
+                            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-[11px] sm:text-xs font-bold transition-all"
                           >
-                            <Phone className="w-3.5 h-3.5 text-red-600" />
+                            <Phone className="w-3 h-3 text-red-600" />
                             <span>Call</span>
                           </a>
                           <a
-                            href={`https://api.whatsapp.com/send?phone=${inq.phone.replace(/[^0-9]/g, '').length === 10 ? '91' + inq.phone.replace(/[^0-9]/g, '') : inq.phone.replace(/[^0-9]/g, '')}&text=Hello%20${encodeURIComponent(
-                              inq.name
-                            )},%20STAR%20DIGITAL%20here%20regarding%20your%20appliance%20service%20inquiry.`}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-white text-xs font-bold"
+                            href={getWhatsAppUrl(
+                              `Hello ${inq.name}, STAR DIGITAL here regarding your appliance service inquiry.`,
+                              inq.phone
+                            )}
+                            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-white text-[11px] sm:text-xs font-bold transition-all"
                           >
-                            <MessageSquare className="w-3.5 h-3.5 fill-current" />
+                            <MessageSquare className="w-3 h-3 fill-current" />
                             <span>WhatsApp</span>
                           </a>
                         </div>
@@ -1035,7 +1039,7 @@ export default function AdminDashboardPage() {
                           {inq.status !== 'RESOLVED' && (
                             <button
                               onClick={() => handleUpdateInquiry(inq.id, 'RESOLVED')}
-                              className="px-3 py-1 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 text-xs font-semibold"
+                              className="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 text-[11px] sm:text-xs font-semibold transition-all"
                             >
                               Mark Resolved
                             </button>
@@ -1043,7 +1047,7 @@ export default function AdminDashboardPage() {
                           {inq.status === 'RESOLVED' && (
                             <button
                               onClick={() => handleUpdateInquiry(inq.id, 'NEW')}
-                              className="px-3 py-1 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 text-xs font-semibold"
+                              className="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 text-[11px] sm:text-xs font-semibold transition-all"
                             >
                               Reopen
                             </button>
@@ -1059,29 +1063,34 @@ export default function AdminDashboardPage() {
 
         {/* ── TAB 3: SERVICES DIRECTORY ── */}
         {activeTab === 'services' && (
-          <div className="space-y-6">
-            <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
-              <h2 className="text-xl font-bold text-slate-900">Appliance Services Directory</h2>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Toggle services active/inactive or modify details directly.
-              </p>
+          <div className="space-y-4 sm:space-y-6">
+            <div className="bg-white p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-black/[0.06] shadow-apple flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div>
+                <h2 className="text-sm sm:text-lg font-bold text-slate-900">Appliance Services Directory</h2>
+                <p className="text-[10px] sm:text-xs text-slate-500 mt-0.5">
+                  Toggle services active/inactive or modify details directly.
+                </p>
+              </div>
+              <span className="px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-bold bg-slate-100 text-slate-700 self-start sm:self-auto">
+                {services.length} Total Services
+              </span>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {services.map((s) => (
                 <div
                   key={s.id}
-                  className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden flex flex-col justify-between"
+                  className="bg-white rounded-2xl border border-black/[0.06] shadow-apple overflow-hidden flex flex-col justify-between"
                 >
-                  <div className="relative h-40 bg-slate-900">
+                  <div className="relative h-36 sm:h-40 bg-slate-900">
                     <img
                       src={s.image || 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80'}
                       alt={s.name}
                       className="w-full h-full object-cover opacity-80"
                     />
-                    <div className="absolute top-3 right-3">
+                    <div className="absolute top-2.5 right-2.5">
                       <span
-                        className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                        className={`px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold uppercase tracking-wider ${
                           s.active
                             ? 'bg-emerald-500 text-white'
                             : 'bg-slate-500 text-white'
@@ -1090,21 +1099,21 @@ export default function AdminDashboardPage() {
                         {s.active ? 'Active' : 'Disabled'}
                       </span>
                     </div>
-                    <div className="absolute bottom-3 left-3 right-3 text-white">
-                      <h3 className="text-lg font-bold">{s.name}</h3>
-                      <p className="text-xs text-slate-300 font-mono">/{s.slug}</p>
+                    <div className="absolute bottom-2.5 left-3 right-3 text-white">
+                      <h3 className="text-sm sm:text-base font-bold">{s.name}</h3>
+                      <p className="text-[11px] text-slate-300 font-mono">/{s.slug}</p>
                     </div>
                   </div>
 
-                  <div className="p-5 space-y-3">
+                  <div className="p-3.5 sm:p-5 space-y-2.5">
                     <p className="text-xs text-slate-600 line-clamp-2">
                       {s.tagline || s.shortDesc}
                     </p>
 
-                    <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
+                    <div className="pt-2.5 border-t border-slate-100 flex items-center justify-between">
                       <button
                         onClick={() => handleToggleService(s.id, s.active)}
-                        className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                        className={`px-3 py-1.5 rounded-xl text-xs font-bold active:scale-95 transition-all ${
                           s.active
                             ? 'bg-red-50 text-red-600 hover:bg-red-100'
                             : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
@@ -1131,30 +1140,35 @@ export default function AdminDashboardPage() {
 
         {/* ── TAB 4: KANPUR SERVICE AREAS ── */}
         {activeTab === 'areas' && (
-          <div className="space-y-6">
-            <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
-              <h2 className="text-xl font-bold text-slate-900">Kanpur Coverage Localities</h2>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Active service zones, postal codes, and estimated arrival windows.
-              </p>
+          <div className="space-y-4 sm:space-y-6">
+            <div className="bg-white p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-black/[0.06] shadow-apple flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div>
+                <h2 className="text-sm sm:text-lg font-bold text-slate-900">Kanpur Coverage Localities</h2>
+                <p className="text-[10px] sm:text-xs text-slate-500 mt-0.5">
+                  Active service zones, postal codes, and estimated arrival windows.
+                </p>
+              </div>
+              <span className="px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-bold bg-slate-100 text-slate-700 self-start sm:self-auto">
+                {areas.length} Localities
+              </span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
               {areas.map((area) => (
                 <div
                   key={area.id}
-                  className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between"
+                  className="bg-white p-3.5 sm:p-4 rounded-2xl border border-black/[0.06] shadow-apple flex items-center justify-between"
                 >
-                  <div className="space-y-1">
-                    <h4 className="text-sm font-bold text-slate-900">{area.name}</h4>
-                    <p className="text-xs text-slate-500">
+                  <div className="space-y-0.5">
+                    <h4 className="text-xs sm:text-sm font-bold text-slate-900">{area.name}</h4>
+                    <p className="text-[10px] sm:text-xs text-slate-500">
                       {area.district} {area.pincode && `• PIN: ${area.pincode}`}
                     </p>
-                    <span className="inline-block text-[11px] text-emerald-700 font-medium">
+                    <span className="inline-block text-[10px] sm:text-[11px] text-emerald-700 font-semibold">
                       ~{area.estimatedArrivalMins} Mins Dispatch
                     </span>
                   </div>
-                  <div className="w-8 h-8 rounded-xl bg-red-50 text-red-600 flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-xl bg-red-50 text-red-600 flex items-center justify-center shrink-0">
                     <MapPin className="w-4 h-4" />
                   </div>
                 </div>
@@ -1165,72 +1179,72 @@ export default function AdminDashboardPage() {
 
         {/* ── TAB 5: REVIEWS ── */}
         {activeTab === 'reviews' && (
-          <div className="space-y-6">
-            <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="space-y-4 sm:space-y-6">
+            <div className="bg-white p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-black/[0.06] shadow-apple flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
               <div>
-                <h2 className="text-xl font-bold text-slate-900">Customer Reviews Management</h2>
-                <p className="text-xs text-slate-500 mt-0.5">
+                <h2 className="text-sm sm:text-lg font-bold text-slate-900">Customer Reviews Management</h2>
+                <p className="text-[10px] sm:text-xs text-slate-500 mt-0.5">
                   Real-time reviews submitted by website visitors and CMS testimonials.
                 </p>
               </div>
 
               <div className="flex items-center gap-2">
-                <span className="px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-700">
+                <span className="px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-bold bg-slate-100 text-slate-700">
                   Total: {reviews.length}
                 </span>
-                <span className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                <span className="px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
                   Live: {reviews.filter((r) => r.published).length}
                 </span>
               </div>
             </div>
 
             {reviews.length === 0 ? (
-              <div className="bg-white p-12 text-center rounded-3xl border border-slate-200 text-slate-400 space-y-2">
-                <Star className="w-10 h-10 mx-auto opacity-30 text-amber-500" />
-                <p className="text-sm font-semibold">No reviews found</p>
-                <p className="text-xs">When users submit reviews from the website, they appear here instantly.</p>
+              <div className="bg-white p-8 sm:p-12 text-center rounded-2xl sm:rounded-3xl border border-black/[0.06] shadow-apple text-slate-400 space-y-2">
+                <Star className="w-8 h-8 sm:w-10 sm:h-10 mx-auto opacity-30 text-amber-500" />
+                <p className="text-xs sm:text-sm font-semibold">No reviews found</p>
+                <p className="text-[10px] sm:text-xs">When users submit reviews from the website, they appear here instantly.</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 {reviews.map((rev) => (
                   <div
                     key={rev.id}
-                    className={`bg-white p-6 rounded-3xl border shadow-sm flex flex-col justify-between space-y-4 transition-all ${
-                      rev.published ? 'border-slate-200' : 'border-slate-200 opacity-60 bg-slate-50/50'
+                    className={`bg-white p-4 sm:p-6 rounded-2xl border shadow-apple flex flex-col justify-between space-y-3 transition-all ${
+                      rev.published ? 'border-black/[0.06]' : 'border-slate-200 opacity-60 bg-slate-50/50'
                     }`}
                   >
-                    <div className="space-y-3">
+                    <div className="space-y-2.5">
                       <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-1 text-amber-500">
+                        <div className="flex items-center gap-1 text-amber-400">
                           {[...Array(rev.rating || 5)].map((_, i) => (
-                            <Star key={i} className="w-4 h-4 fill-current" />
+                            <Star key={i} className="w-3.5 h-3.5 fill-current" />
                           ))}
                         </div>
 
                         {!rev.isPlaceholder ? (
-                          <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
+                          <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
                             Live User Review
                           </span>
                         ) : (
-                          <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-slate-100 text-slate-500">
+                          <span className="px-2 py-0.5 rounded-full text-[9px] font-mono bg-slate-100 text-slate-500">
                             CMS Default
                           </span>
                         )}
                       </div>
 
-                      <p className="text-xs sm:text-sm text-slate-700 italic bg-slate-50 p-3 rounded-2xl border border-slate-100">
+                      <p className="text-xs sm:text-sm text-slate-700 italic bg-slate-50 p-2.5 sm:p-3 rounded-xl border border-slate-100 leading-relaxed">
                         &ldquo;{rev.review}&rdquo;
                       </p>
                     </div>
 
-                    <div className="pt-3 border-t border-slate-100 space-y-3">
+                    <div className="pt-2.5 border-t border-slate-100 space-y-2.5">
                       <div className="flex items-center justify-between">
                         <div>
                           <h4 className="text-xs font-bold text-slate-900">{rev.customerName}</h4>
-                          <p className="text-[11px] text-slate-400">{rev.area}</p>
+                          <p className="text-[10px] text-slate-400">{rev.area}</p>
                         </div>
                         <span
-                          className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                          className={`px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold ${
                             rev.published
                               ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
                               : 'bg-slate-200 text-slate-600'
@@ -1243,7 +1257,7 @@ export default function AdminDashboardPage() {
                       <div className="flex items-center justify-between gap-2 pt-1 border-t border-slate-50">
                         <button
                           onClick={() => handleToggleReview(rev.id, rev.published)}
-                          className={`px-3 py-1 rounded-xl text-xs font-bold transition-all ${
+                          className={`px-3 py-1.5 rounded-xl text-xs font-bold active:scale-95 transition-all ${
                             rev.published
                               ? 'bg-slate-100 hover:bg-slate-200 text-slate-600'
                               : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700'
@@ -1270,17 +1284,17 @@ export default function AdminDashboardPage() {
 
         {/* ── TAB 4: WORK PHOTOS & GALLERY ── */}
         {activeTab === 'photos' && (
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             {/* Action Bar */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
-              <div className="space-y-1">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-black/[0.06] shadow-apple">
+              <div className="space-y-0.5">
                 <div className="flex items-center gap-2">
-                  <h2 className="text-xl font-bold text-slate-900">Work Photos & Service Gallery</h2>
-                  <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-50 text-red-600">
+                  <h2 className="text-sm sm:text-lg font-bold text-slate-900">Work Photos Gallery</h2>
+                  <span className="px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold bg-red-50 text-red-600 border border-red-200/50">
                     {photos.length} Total
                   </span>
                 </div>
-                <p className="text-xs text-slate-500">
+                <p className="text-[10px] sm:text-xs text-slate-500">
                   Upload and manage genuine doorstep appliance repair photos displayed on the storefront home page.
                 </p>
               </div>
@@ -1294,7 +1308,7 @@ export default function AdminDashboardPage() {
                   setPhotoLocation('Kanpur')
                   setIsPhotoModalOpen(true)
                 }}
-                className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs text-white bg-red-600 hover:bg-red-700 shadow-md shadow-red-600/20 active:scale-98 transition-all shrink-0"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs text-white bg-red-600 hover:bg-red-700 shadow-md shadow-red-600/20 active:scale-95 transition-all shrink-0"
               >
                 <Plus className="w-4 h-4" />
                 <span>Upload New Photo</span>
@@ -1302,13 +1316,13 @@ export default function AdminDashboardPage() {
             </div>
 
             {/* Category Filter Tabs */}
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="flex overflow-x-auto items-center gap-1.5 pb-1 scrollbar-none">
               {[
                 { id: 'ALL', label: 'All Photos' },
-                { id: 'ac', label: 'Air Conditioners' },
+                { id: 'ac', label: 'ACs' },
                 { id: 'washing_machine', label: 'Washing Machines' },
                 { id: 'refrigerator', label: 'Refrigerators' },
-                { id: 'repair', label: 'Electronics & Purifiers' },
+                { id: 'repair', label: 'Electronics & RO' },
               ].map((tab) => {
                 const isActive = photoFilter === tab.id
                 const count =
@@ -1320,7 +1334,7 @@ export default function AdminDashboardPage() {
                   <button
                     key={tab.id}
                     onClick={() => setPhotoFilter(tab.id)}
-                    className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+                    className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 ${
                       isActive
                         ? 'bg-slate-900 text-white shadow-sm'
                         : 'bg-white text-slate-600 hover:bg-slate-50 border border-slate-200'
@@ -1328,7 +1342,7 @@ export default function AdminDashboardPage() {
                   >
                     <span>{tab.label}</span>
                     <span
-                      className={`text-[10px] px-1.5 py-0.2 rounded-full ${
+                      className={`text-[9px] px-1.5 py-0.2 rounded-full ${
                         isActive ? 'bg-white/20' : 'bg-slate-100'
                       }`}
                     >
@@ -1341,11 +1355,11 @@ export default function AdminDashboardPage() {
 
             {/* Photos Grid */}
             {photos.filter((p) => photoFilter === 'ALL' || p.category?.toLowerCase() === photoFilter.toLowerCase()).length === 0 ? (
-              <div className="bg-white rounded-3xl border border-slate-200 p-12 text-center text-slate-400 space-y-3">
-                <Camera className="w-12 h-12 mx-auto text-slate-300" />
-                <h3 className="text-base font-bold text-slate-700">No photos in this category yet</h3>
-                <p className="text-xs text-slate-500 max-w-sm mx-auto">
-                  Click &apos;Upload New Photo&apos; above to upload a photo from your computer or paste an image URL.
+              <div className="bg-white rounded-2xl sm:rounded-3xl border border-black/[0.06] shadow-apple p-8 sm:p-12 text-center text-slate-400 space-y-2.5">
+                <Camera className="w-10 h-10 mx-auto text-slate-300" />
+                <h3 className="text-sm sm:text-base font-bold text-slate-700">No photos in this category yet</h3>
+                <p className="text-[11px] sm:text-xs text-slate-500 max-w-sm mx-auto">
+                  Click &apos;Upload New Photo&apos; above to upload a photo from your phone or paste an image URL.
                 </p>
                 <button
                   onClick={() => setIsPhotoModalOpen(true)}
@@ -1356,13 +1370,13 @@ export default function AdminDashboardPage() {
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 {photos
                   .filter((p) => photoFilter === 'ALL' || p.category?.toLowerCase() === photoFilter.toLowerCase())
                   .map((photo) => (
                     <div
                       key={photo.id}
-                      className="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-sm flex flex-col justify-between hover:shadow-md transition-all"
+                      className="bg-white rounded-2xl border border-black/[0.06] shadow-apple overflow-hidden flex flex-col justify-between hover:shadow-apple-hover transition-all"
                     >
                       <div>
                         {/* Image Preview */}
@@ -1372,14 +1386,14 @@ export default function AdminDashboardPage() {
                             alt={photo.title}
                             className="w-full h-full object-cover"
                           />
-                          <div className="absolute top-3 left-3 flex items-center gap-1.5">
-                            <span className="px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-black/60 backdrop-blur-md text-white">
+                          <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5">
+                            <span className="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider bg-black/60 backdrop-blur-md text-white">
                               {photo.category}
                             </span>
                           </div>
-                          <div className="absolute top-3 right-3">
+                          <div className="absolute top-2.5 right-2.5">
                             <span
-                              className={`px-2.5 py-1 rounded-full text-[10px] font-bold backdrop-blur-md ${
+                              className={`px-2 py-0.5 rounded-full text-[9px] font-bold backdrop-blur-md ${
                                 photo.published
                                   ? 'bg-emerald-500/90 text-white'
                                   : 'bg-slate-800/80 text-slate-300'
@@ -1391,13 +1405,13 @@ export default function AdminDashboardPage() {
                         </div>
 
                         {/* Info */}
-                        <div className="p-5 space-y-2">
-                          <h3 className="text-sm font-bold text-slate-900 line-clamp-1">{photo.title}</h3>
+                        <div className="p-3.5 sm:p-5 space-y-1.5">
+                          <h3 className="text-xs sm:text-sm font-bold text-slate-900 line-clamp-1">{photo.title}</h3>
                           {photo.caption && (
-                            <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">{photo.caption}</p>
+                            <p className="text-[11px] sm:text-xs text-slate-500 line-clamp-2 leading-relaxed">{photo.caption}</p>
                           )}
                           {photo.location && (
-                            <div className="flex items-center gap-1 text-[11px] text-slate-400 pt-1">
+                            <div className="flex items-center gap-1 text-[10px] text-slate-400 pt-0.5">
                               <MapPin className="w-3 h-3 text-red-500 shrink-0" />
                               <span>{photo.location}</span>
                             </div>
@@ -1406,10 +1420,10 @@ export default function AdminDashboardPage() {
                       </div>
 
                       {/* Footer Actions */}
-                      <div className="px-5 py-3.5 bg-slate-50 border-t border-slate-100 flex items-center justify-between gap-2">
+                      <div className="px-3.5 sm:px-5 py-3 bg-slate-50/80 border-t border-slate-100 flex items-center justify-between gap-2">
                         <button
                           onClick={() => handleTogglePhoto(photo.id, photo.published)}
-                          className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                          className={`px-3 py-1.5 rounded-xl text-xs font-bold active:scale-95 transition-all ${
                             photo.published
                               ? 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-100'
                               : 'bg-emerald-600 text-white hover:bg-emerald-700'
@@ -1433,27 +1447,27 @@ export default function AdminDashboardPage() {
 
             {/* ── MODAL: UPLOAD / ADD NEW PHOTO ── */}
             {isPhotoModalOpen && (
-              <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm overflow-y-auto flex items-center justify-center p-4">
-                <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-lg w-full p-6 sm:p-8 space-y-6 relative animate-in fade-in zoom-in-95 duration-200">
-                  <div className="flex items-center justify-between pb-4 border-b border-slate-100">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center">
-                        <Camera className="w-5 h-5" />
+              <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-md overflow-y-auto flex items-center justify-center p-3 sm:p-4 animate-fade-in">
+                <div className="bg-white rounded-2xl sm:rounded-3xl border border-black/[0.08] shadow-apple-modal max-w-lg w-full p-4 sm:p-6 space-y-4 relative my-auto max-h-[90vh] overflow-y-auto">
+                  <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-red-50 text-red-600 flex items-center justify-center shrink-0">
+                        <Camera className="w-4 h-4 sm:w-5 sm:h-5" />
                       </div>
                       <div>
-                        <h3 className="text-lg font-bold text-slate-900">Upload Work Photo</h3>
-                        <p className="text-xs text-slate-500">Showcase repair work to customers in Kanpur.</p>
+                        <h3 className="text-sm sm:text-base font-bold text-slate-900">Upload Work Photo</h3>
+                        <p className="text-[10px] sm:text-xs text-slate-500">Showcase repair work to customers in Kanpur.</p>
                       </div>
                     </div>
                     <button
                       onClick={() => setIsPhotoModalOpen(false)}
-                      className="w-8 h-8 rounded-full bg-slate-100 text-slate-400 hover:text-slate-700 flex items-center justify-center"
+                      className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-slate-100 text-slate-500 hover:text-slate-800 flex items-center justify-center"
                     >
                       <X className="w-4 h-4" />
                     </button>
                   </div>
 
-                  <form onSubmit={handleCreatePhoto} className="space-y-4">
+                  <form onSubmit={handleCreatePhoto} className="space-y-3.5">
                     {/* Image Upload / Input */}
                     <div className="space-y-2">
                       <label className="block text-xs font-bold text-slate-700">
@@ -1461,7 +1475,7 @@ export default function AdminDashboardPage() {
                       </label>
 
                       {/* File Upload Box */}
-                      <label className="border-2 border-dashed border-slate-200 hover:border-red-400 rounded-2xl p-4 flex flex-col items-center justify-center cursor-pointer transition-colors bg-slate-50 hover:bg-red-50/30">
+                      <label className="border-2 border-dashed border-slate-200 hover:border-red-400 rounded-2xl p-3 sm:p-4 flex flex-col items-center justify-center cursor-pointer transition-colors bg-slate-50 hover:bg-red-50/30">
                         <input
                           type="file"
                           accept="image/*"
@@ -1475,12 +1489,12 @@ export default function AdminDashboardPage() {
                             <span>Uploading photo to server...</span>
                           </div>
                         ) : (
-                          <div className="flex flex-col items-center gap-1.5 text-center py-2">
-                            <UploadCloud className="w-8 h-8 text-slate-400" />
+                          <div className="flex flex-col items-center gap-1 text-center py-1.5">
+                            <UploadCloud className="w-7 h-7 sm:w-8 sm:h-8 text-slate-400" />
                             <span className="text-xs font-bold text-slate-700">
-                              Click to choose image from device
+                              Click to choose image from phone
                             </span>
-                            <span className="text-[11px] text-slate-400">
+                            <span className="text-[10px] text-slate-400">
                               JPEG, PNG, WEBP up to 10MB
                             </span>
                           </div>
@@ -1488,30 +1502,28 @@ export default function AdminDashboardPage() {
                       </label>
 
                       {/* Or URL input */}
-                      <div className="relative pt-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="text-[11px] text-slate-400 font-semibold uppercase tracking-wider">
-                            Or paste image URL
-                          </span>
-                        </div>
+                      <div className="relative pt-0.5">
+                        <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider block mb-1">
+                          Or paste image URL
+                        </span>
                         <input
                           type="url"
                           value={photoImageUrl}
                           onChange={(e) => setPhotoImageUrl(e.target.value)}
                           placeholder="https://images.unsplash.com/... or /uploads/photos/..."
-                          className="w-full px-4 py-2 rounded-xl border border-slate-200 text-xs font-mono focus:outline-none focus:border-red-600"
+                          className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-mono focus:outline-none focus:border-red-600 text-slate-800"
                         />
                       </div>
 
                       {/* Live Image Preview */}
                       {photoImageUrl && (
-                        <div className="mt-2 rounded-2xl overflow-hidden border border-slate-200 aspect-[16/9] relative bg-slate-100">
+                        <div className="mt-1.5 rounded-xl overflow-hidden border border-slate-200 aspect-[16/9] relative bg-slate-100">
                           <img
                             src={photoImageUrl}
                             alt="Preview"
                             className="w-full h-full object-cover"
                           />
-                          <span className="absolute bottom-2 right-2 px-2 py-0.5 rounded text-[10px] font-bold bg-black/70 text-white">
+                          <span className="absolute bottom-1.5 right-1.5 px-2 py-0.5 rounded text-[9px] font-bold bg-black/70 text-white">
                             Preview
                           </span>
                         </div>
@@ -1529,7 +1541,7 @@ export default function AdminDashboardPage() {
                         value={photoTitle}
                         onChange={(e) => setPhotoTitle(e.target.value)}
                         placeholder="e.g. Split AC Chemical Jet Servicing"
-                        className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-red-600"
+                        className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-red-600 text-slate-800"
                       />
                     </div>
 
@@ -1542,26 +1554,26 @@ export default function AdminDashboardPage() {
                         rows={2}
                         value={photoCaption}
                         onChange={(e) => setPhotoCaption(e.target.value)}
-                        placeholder="Details of the repair performed, parts replaced, or diagnostic steps taken..."
-                        className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-red-600 resize-none"
+                        placeholder="Details of repair performed..."
+                        className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-red-600 resize-none text-slate-800"
                       />
                     </div>
 
                     {/* Category and Location */}
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                       <div>
                         <label className="block text-xs font-bold text-slate-700 mb-1">
-                          Appliance Category
+                          Category
                         </label>
                         <select
                           value={photoCategory}
                           onChange={(e) => setPhotoCategory(e.target.value)}
-                          className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs bg-white focus:outline-none focus:border-red-600"
+                          className="w-full px-2.5 py-2 rounded-xl border border-slate-200 text-xs bg-white focus:outline-none focus:border-red-600 text-slate-800"
                         >
                           <option value="ac">Air Conditioner (AC)</option>
                           <option value="washing_machine">Washing Machine</option>
                           <option value="refrigerator">Refrigerator</option>
-                          <option value="repair">Electronics & Purifiers</option>
+                          <option value="repair">Electronics &amp; RO</option>
                           <option value="workshop">Workshop PCB Lab</option>
                         </select>
                       </div>
@@ -1575,30 +1587,30 @@ export default function AdminDashboardPage() {
                           value={photoLocation}
                           onChange={(e) => setPhotoLocation(e.target.value)}
                           placeholder="e.g. Kakadeo, Kanpur"
-                          className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-red-600"
+                          className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-red-600 text-slate-800"
                         />
                       </div>
                     </div>
 
                     {/* Submit Buttons */}
-                    <div className="pt-3 flex items-center justify-end gap-3 border-t border-slate-100">
+                    <div className="pt-2.5 flex items-center justify-end gap-2.5 border-t border-slate-100">
                       <button
                         type="button"
                         onClick={() => setIsPhotoModalOpen(false)}
-                        className="px-4 py-2.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition-all"
+                        className="px-3.5 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition-all"
                       >
                         Cancel
                       </button>
                       <button
                         type="submit"
                         disabled={savingPhoto || uploadingPhotoFile || !photoImageUrl}
-                        className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-red-600 hover:bg-red-700 active:scale-98 transition-all disabled:opacity-50 shadow-md shadow-red-600/20"
+                        className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white bg-red-600 hover:bg-red-700 active:scale-95 transition-all disabled:opacity-50 shadow-sm"
                       >
                         {savingPhoto ? (
-                          <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                          <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                         ) : (
                           <>
-                            <UploadCloud className="w-4 h-4" />
+                            <UploadCloud className="w-3.5 h-3.5" />
                             <span>Publish to Gallery</span>
                           </>
                         )}
@@ -1613,43 +1625,43 @@ export default function AdminDashboardPage() {
 
         {/* ── TAB 6: SECURITY & SETTINGS ── */}
         {activeTab === 'settings' && (
-          <div className="max-w-xl mx-auto space-y-6">
+          <div className="max-w-xl mx-auto space-y-4 sm:space-y-6">
             {/* Change Admin Username */}
-            <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm space-y-6">
-              <div className="flex items-center justify-between pb-4 border-b border-slate-100">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-2xl bg-slate-900 text-white flex items-center justify-center shadow-sm">
-                    <User className="w-5 h-5" />
+            <div className="bg-white p-4 sm:p-7 rounded-2xl sm:rounded-3xl border border-black/[0.06] shadow-apple space-y-4 sm:space-y-5">
+              <div className="flex items-center justify-between pb-3.5 border-b border-slate-100">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-slate-900 text-white flex items-center justify-center shadow-sm shrink-0">
+                    <User className="w-4 h-4 sm:w-5 sm:h-5" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-bold text-slate-900">Change Admin Username</h3>
-                    <p className="text-xs text-slate-500">
+                    <h3 className="text-sm sm:text-base font-bold text-slate-900">Change Admin Username</h3>
+                    <p className="text-[10px] sm:text-xs text-slate-500">
                       Update your login username for accessing the admin panel.
                     </p>
                   </div>
                 </div>
                 {currentUser?.username && (
-                  <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200">
+                  <span className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-slate-100 text-slate-700 border border-slate-200">
                     Active: <strong className="text-slate-900 font-mono">@{currentUser.username}</strong>
                   </span>
                 )}
               </div>
 
-              <form onSubmit={handleChangeUsername} className="space-y-4">
+              <form onSubmit={handleChangeUsername} className="space-y-3 sm:space-y-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  <label className="block text-[11px] sm:text-xs font-semibold text-slate-700 mb-1">
                     Current Username
                   </label>
                   <input
                     type="text"
                     disabled
                     value={currentUser?.username || 'admin'}
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-600 text-sm font-mono cursor-not-allowed select-none"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-slate-600 text-xs sm:text-sm font-mono cursor-not-allowed select-none"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  <label className="block text-[11px] sm:text-xs font-semibold text-slate-700 mb-1">
                     New Username *
                   </label>
                   <input
@@ -1658,34 +1670,34 @@ export default function AdminDashboardPage() {
                     value={newUsername}
                     onChange={(e) => setNewUsername(e.target.value.toLowerCase().replace(/\s+/g, ''))}
                     placeholder="e.g. stardigital_admin"
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-red-600 font-mono"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs sm:text-sm focus:outline-none focus:border-red-600 font-mono text-slate-800"
                   />
-                  <p className="text-[11px] text-slate-400 mt-1">
+                  <p className="text-[10px] text-slate-400 mt-1">
                     At least 3 characters. Letters, numbers, underscores, and hyphens.
                   </p>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">
-                    Current Password <span className="text-slate-400 font-normal">(optional security verification)</span>
+                  <label className="block text-[11px] sm:text-xs font-semibold text-slate-700 mb-1">
+                    Current Password <span className="text-slate-400 font-normal">(optional verification)</span>
                   </label>
                   <input
                     type="password"
                     value={usernamePasswordConfirm}
                     onChange={(e) => setUsernamePasswordConfirm(e.target.value)}
                     placeholder="••••••••••••"
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-red-600"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs sm:text-sm focus:outline-none focus:border-red-600"
                   />
                 </div>
 
-                <div className="pt-2">
+                <div className="pt-1">
                   <button
                     type="submit"
                     disabled={changingUsername}
-                    className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-sm font-bold text-white bg-slate-900 hover:bg-slate-800 active:scale-98 transition-all disabled:opacity-50 shadow-md"
+                    className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold text-white bg-slate-900 hover:bg-slate-800 active:scale-95 transition-all disabled:opacity-50 shadow-sm"
                   >
                     {changingUsername ? (
-                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                     ) : (
                       <span>Update Username</span>
                     )}
@@ -1695,22 +1707,22 @@ export default function AdminDashboardPage() {
             </div>
 
             {/* Change Admin Password */}
-            <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm space-y-6">
-              <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
-                <div className="w-10 h-10 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center">
-                  <Key className="w-5 h-5" />
+            <div className="bg-white p-4 sm:p-7 rounded-2xl sm:rounded-3xl border border-black/[0.06] shadow-apple space-y-4 sm:space-y-5">
+              <div className="flex items-center gap-2.5 pb-3.5 border-b border-slate-100">
+                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-red-50 text-red-600 flex items-center justify-center shrink-0">
+                  <Key className="w-4 h-4 sm:w-5 sm:h-5" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-slate-900">Change Admin Password</h3>
-                  <p className="text-xs text-slate-500">
+                  <h3 className="text-sm sm:text-base font-bold text-slate-900">Change Admin Password</h3>
+                  <p className="text-[10px] sm:text-xs text-slate-500">
                     Update your master access credentials securely.
                   </p>
                 </div>
               </div>
 
-              <form onSubmit={handleChangePassword} className="space-y-4">
+              <form onSubmit={handleChangePassword} className="space-y-3 sm:space-y-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  <label className="block text-[11px] sm:text-xs font-semibold text-slate-700 mb-1">
                     Current Password
                   </label>
                   <input
@@ -1719,12 +1731,12 @@ export default function AdminDashboardPage() {
                     value={currentPassword}
                     onChange={(e) => setCurrentPassword(e.target.value)}
                     placeholder="••••••••••••"
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-red-600"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs sm:text-sm focus:outline-none focus:border-red-600"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  <label className="block text-[11px] sm:text-xs font-semibold text-slate-700 mb-1">
                     New Password
                   </label>
                   <input
@@ -1733,12 +1745,12 @@ export default function AdminDashboardPage() {
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
                     placeholder="At least 6 characters"
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-red-600"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs sm:text-sm focus:outline-none focus:border-red-600"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  <label className="block text-[11px] sm:text-xs font-semibold text-slate-700 mb-1">
                     Confirm New Password
                   </label>
                   <input
@@ -1747,18 +1759,18 @@ export default function AdminDashboardPage() {
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     placeholder="Repeat new password"
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-red-600"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs sm:text-sm focus:outline-none focus:border-red-600"
                   />
                 </div>
 
-                <div className="pt-2">
+                <div className="pt-1">
                   <button
                     type="submit"
                     disabled={changingPassword}
-                    className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-sm font-bold text-white bg-red-600 hover:bg-red-700 active:scale-98 transition-all disabled:opacity-50 shadow-md shadow-red-600/20"
+                    className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold text-white bg-red-600 hover:bg-red-700 active:scale-95 transition-all disabled:opacity-50 shadow-md shadow-red-600/20"
                   >
                     {changingPassword ? (
-                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                     ) : (
                       <span>Update Password</span>
                     )}

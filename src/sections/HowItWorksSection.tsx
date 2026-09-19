@@ -1,5 +1,6 @@
 import { PhoneCall, UserCheck, CheckCircle2 } from 'lucide-react'
 import type { ReactNode } from 'react'
+import { ScrollReveal } from '@/components/ScrollReveal'
 
 export function HowItWorksSection() {
   const steps: { step: string; title: string; desc: string; icon: ReactNode }[] = [
@@ -39,20 +40,25 @@ export function HowItWorksSection() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
-          {steps.map((s) => (
-            <div
+          {steps.map((s, idx) => (
+            <ScrollReveal
               key={s.step}
-              className="relative flex flex-col items-center text-center p-6 sm:p-8 rounded-apple-lg bg-apple-canvas border border-black/[0.06] shadow-apple"
+              animation="fade-up"
+              delay={idx * 120}
+              duration={600}
+              className="h-full"
             >
-              <div className="absolute top-4 right-5 text-2xl font-black text-slate-300 select-none">
-                {s.step}
+              <div className="relative flex flex-col items-center text-center p-6 sm:p-8 rounded-apple-lg bg-apple-canvas border border-black/[0.06] shadow-apple h-full">
+                <div className="absolute top-4 right-5 text-2xl font-black text-slate-300 select-none">
+                  {s.step}
+                </div>
+                <div className="w-14 h-14 rounded-2xl bg-white border border-black/[0.08] flex items-center justify-center mb-6 shadow-sm">
+                  {s.icon}
+                </div>
+                <h3 className="text-lg font-bold text-apple-text tracking-tight">{s.title}</h3>
+                <p className="text-xs sm:text-sm text-apple-secondary mt-2 leading-relaxed">{s.desc}</p>
               </div>
-              <div className="w-14 h-14 rounded-2xl bg-white border border-black/[0.08] flex items-center justify-center mb-6 shadow-sm">
-                {s.icon}
-              </div>
-              <h3 className="text-lg font-bold text-apple-text tracking-tight">{s.title}</h3>
-              <p className="text-xs sm:text-sm text-apple-secondary mt-2 leading-relaxed">{s.desc}</p>
-            </div>
+            </ScrollReveal>
           ))}
         </div>
       </div>

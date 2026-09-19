@@ -1,5 +1,6 @@
 import { ShieldCheck, Clock, BadgeIndianRupee, Sparkles } from 'lucide-react'
 import type { ReactNode } from 'react'
+import { ScrollReveal } from '@/components/ScrollReveal'
 
 interface Benefit {
   icon: ReactNode
@@ -48,18 +49,23 @@ export function WhyStarDigital() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {benefits.map((b, idx) => (
-            <div
+            <ScrollReveal
               key={idx}
-              className="bg-white rounded-apple-lg border border-black/[0.07] p-6 shadow-apple hover:shadow-apple-card transition-all flex flex-col justify-between"
+              animation="fade-up"
+              delay={idx * 80}
+              duration={600}
+              className="h-full"
             >
-              <div>
-                <div className="w-12 h-12 rounded-apple bg-star-50 border border-star-100/70 flex items-center justify-center mb-5">
-                  {b.icon}
+              <div className="bg-white rounded-apple-lg border border-black/[0.07] p-6 shadow-apple hover:shadow-apple-card transition-all flex flex-col justify-between h-full">
+                <div>
+                  <div className="w-12 h-12 rounded-apple bg-star-50 border border-star-100/70 flex items-center justify-center mb-5">
+                    {b.icon}
+                  </div>
+                  <h3 className="text-base font-bold text-apple-text tracking-tight">{b.title}</h3>
+                  <p className="text-xs sm:text-sm text-apple-secondary mt-2 leading-relaxed">{b.desc}</p>
                 </div>
-                <h3 className="text-base font-bold text-apple-text tracking-tight">{b.title}</h3>
-                <p className="text-xs sm:text-sm text-apple-secondary mt-2 leading-relaxed">{b.desc}</p>
               </div>
-            </div>
+            </ScrollReveal>
           ))}
         </div>
       </div>

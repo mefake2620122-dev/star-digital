@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import { ArrowRight, ShieldCheck } from 'lucide-react'
+import { ScrollReveal } from '@/components/ScrollReveal'
 
 async function getServices() {
   try {
@@ -58,33 +59,40 @@ export async function ServicesSection() {
           </p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {services.map((service) => (
-              <Link
+            {services.map((service, idx) => (
+              <ScrollReveal
                 key={service.id}
-                href={`/services/${service.slug}`}
-                className="group bg-white rounded-apple-lg border border-black/[0.07] p-6 shadow-apple hover:shadow-apple-hover hover:-translate-y-1 transition-all duration-300 flex flex-col gap-4"
+                animation="fade-up"
+                delay={idx * 60}
+                duration={600}
+                className="h-full"
               >
-                <div className="flex items-center justify-between">
-                  <div className="w-12 h-12 rounded-apple bg-star-50 border border-star-100 flex items-center justify-center text-xl">
-                    {iconMap[service.icon] ?? '🔧'}
+                <Link
+                  href={`/services/${service.slug}`}
+                  className="group bg-white rounded-apple-lg border border-black/[0.07] p-6 shadow-apple hover:shadow-apple-hover hover:-translate-y-1 transition-all duration-300 flex flex-col gap-4 h-full"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="w-12 h-12 rounded-apple bg-star-50 border border-star-100 flex items-center justify-center text-xl">
+                      {iconMap[service.icon] ?? '🔧'}
+                    </div>
+                    <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-star-600 group-hover:translate-x-1 transition-all" />
                   </div>
-                  <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-star-600 group-hover:translate-x-1 transition-all" />
-                </div>
 
-                <div>
-                  <h3 className="text-base font-bold text-apple-text tracking-tight group-hover:text-star-700 transition-colors">
-                    {service.name}
-                  </h3>
-                  <p className="text-xs text-apple-secondary mt-1.5 line-clamp-2 leading-relaxed">
-                    {service.shortDesc}
-                  </p>
-                </div>
+                  <div>
+                    <h3 className="text-base font-bold text-apple-text tracking-tight group-hover:text-star-700 transition-colors">
+                      {service.name}
+                    </h3>
+                    <p className="text-xs text-apple-secondary mt-1.5 line-clamp-2 leading-relaxed">
+                      {service.shortDesc}
+                    </p>
+                  </div>
 
-                <div className="mt-auto flex items-center gap-1.5 text-xs text-emerald-600 font-semibold">
-                  <ShieldCheck className="w-3.5 h-3.5" />
-                  <span>Doorstep Service</span>
-                </div>
-              </Link>
+                  <div className="mt-auto flex items-center gap-1.5 text-xs text-emerald-600 font-semibold">
+                    <ShieldCheck className="w-3.5 h-3.5" />
+                    <span>Doorstep Service</span>
+                  </div>
+                </Link>
+              </ScrollReveal>
             ))}
           </div>
         )}
