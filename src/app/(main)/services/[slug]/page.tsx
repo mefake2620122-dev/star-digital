@@ -66,8 +66,6 @@ export default async function ServiceDetailPage({ params }: Props) {
             <div className="flex flex-wrap items-center gap-3 pt-2">
               <a
                 href={getWhatsAppUrl(generateServiceMsg(service.name))}
-                target="_blank"
-                rel="noopener"
                 className="inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-sm active:scale-95 transition-all shadow-md shadow-emerald-600/20"
               >
                 <MessageSquare className="w-4 h-4 fill-current" />
@@ -127,8 +125,6 @@ export default async function ServiceDetailPage({ params }: Props) {
                 <a
                   key={issue.id}
                   href={getWhatsAppUrl(generateServiceMsg(service.name, issue.name))}
-                  target="_blank"
-                  rel="noopener"
                   className="group flex items-start justify-between gap-4 p-4 rounded-2xl border border-slate-100 bg-slate-50 hover:bg-emerald-50/50 hover:border-emerald-200 transition-all"
                 >
                   <div>

@@ -39,7 +39,7 @@ export default async function PhotosPage() {
 
         {/* Editorial Page Header */}
         <div className="max-w-3xl mb-12 sm:mb-16">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-red-50 border border-red-200 text-red-700 text-xs sm:text-sm font-semibold mb-3">
+          <div className="inline-flex flex-wrap items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-1.5 rounded-full bg-red-50 border border-red-200 text-red-700 text-[10px] sm:text-xs font-bold mb-3 max-w-full">
             <Camera className="w-4 h-4 text-red-600" />
             <span>REAL WORK IN KANPUR HOMES • AUTHENTIC PHOTO GALLERY</span>
           </div>
@@ -108,8 +108,6 @@ export default async function PhotosPage() {
           <div className="flex flex-wrap items-center justify-center gap-3">
             <a
               href={getWhatsAppUrl('Hello STAR DIGITAL, I am sharing a photo of my faulty appliance for diagnosis.')}
-              target="_blank"
-              rel="noopener"
               className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-[#25D366] text-white text-sm font-bold hover:bg-[#20bd5a] transition-all shadow-sm"
             >
               <MessageSquare className="w-4 h-4 fill-current" />

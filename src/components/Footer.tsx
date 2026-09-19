@@ -14,7 +14,7 @@ export function Footer() {
   ]
 
   return (
-    <footer className="bg-apple-dark text-white pt-16 pb-8">
+    <footer className="bg-apple-dark text-white pt-16 pb-24 sm:pb-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8 pb-12 border-b border-white/10">
           {/* Brand */}
@@ -47,8 +47,6 @@ export function Footer() {
             <div className="flex flex-wrap gap-3">
               <a
                 href={getWhatsAppUrl('Hello STAR DIGITAL, I need doorstep appliance repair in Kanpur.')}
-                target="_blank"
-                rel="noopener"
                 className="inline-flex items-center gap-2 px-4 py-2.5 rounded-apple bg-[#25D366] text-white text-sm font-semibold hover:bg-[#20bd5a] active:scale-[0.97] transition-all"
                 aria-label="WhatsApp Chat"
               >

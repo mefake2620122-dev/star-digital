@@ -9,28 +9,30 @@ import { SITE_CONFIG, getDialerUrl, getWhatsAppUrl } from '@/lib/site'
  */
 export function MobileStickyBar() {
   return (
-    <div className="fixed bottom-0 inset-x-0 z-50 sm:hidden bg-white/90 backdrop-blur-lg border-t border-slate-200 shadow-apple-modal safe-bottom">
-      <div className="flex divide-x divide-slate-200">
+    <div className="fixed bottom-0 inset-x-0 z-50 sm:hidden bg-white/95 backdrop-blur-xl border-t border-slate-200 shadow-2xl safe-bottom">
+      <div className="grid grid-cols-2 p-2 gap-2">
         <a
           href={getDialerUrl(SITE_CONFIG.phone)}
-          className="flex-1 flex flex-col items-center justify-center gap-1 py-3 text-apple-text hover:text-star-600 active:bg-slate-50 transition-colors"
+          className="flex items-center justify-center gap-2 py-3 px-3 rounded-xl bg-red-600 active:bg-red-700 text-white font-bold text-xs shadow-md shadow-red-600/25 transition-transform active:scale-95"
           aria-label={`Call Star Digital at ${SITE_CONFIG.phone}`}
         >
-          <Phone className="w-5 h-5 fill-current text-star-600" />
-          <span className="text-[11px] font-bold tracking-tight text-star-600">
-            Call Now
-          </span>
+          <Phone className="w-4 h-4 fill-current shrink-0" />
+          <div className="flex flex-col text-left leading-tight">
+            <span>Call Now</span>
+            <span className="text-[10px] font-normal text-white/80">{SITE_CONFIG.phone}</span>
+          </div>
         </a>
 
         <a
           href={getWhatsAppUrl('Hello STAR DIGITAL, I need doorstep appliance repair in Kanpur. Please share the earliest availability.')}
-          target="_blank"
-          rel="noopener"
-          className="flex-1 flex flex-col items-center justify-center gap-1 py-3 text-[#25D366] hover:text-[#1ea850] active:bg-slate-50 transition-colors"
+          className="flex items-center justify-center gap-2 py-3 px-3 rounded-xl bg-[#25D366] active:bg-[#20bd5a] text-white font-bold text-xs shadow-md shadow-emerald-600/25 transition-transform active:scale-95"
           aria-label="Chat on WhatsApp"
         >
-          <MessageSquare className="w-5 h-5 fill-current" />
-          <span className="text-[11px] font-bold tracking-tight">WhatsApp</span>
+          <MessageSquare className="w-4 h-4 fill-current shrink-0" />
+          <div className="flex flex-col text-left leading-tight">
+            <span>WhatsApp</span>
+            <span className="text-[10px] font-normal text-white/80">Fast Response</span>
+          </div>
         </a>
       </div>
     </div>

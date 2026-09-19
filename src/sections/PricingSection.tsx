@@ -410,8 +410,6 @@ export function PricingSection({ showHeader = true, className = '' }: PricingSec
                   href={getWhatsAppUrl(
                     `Hello STAR DIGITAL, I am inquiring about pricing for: ${item.name} (${item.range}). Please share technician availability in Kanpur.`
                   )}
-                  target="_blank"
-                  rel="noopener"
                   className="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-[#25D366] text-white text-xs font-bold hover:bg-[#20bd5a] transition-all shadow-sm"
                   aria-label={`Inquire about ${item.name} on WhatsApp`}
                 >

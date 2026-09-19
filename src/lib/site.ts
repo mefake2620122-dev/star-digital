@@ -35,7 +35,8 @@ function normalizeWANumber(phone?: string): string {
 export function getWhatsAppUrl(message?: string, phone?: string): string {
   const num = normalizeWANumber(phone)
   const msg = message ?? 'Hello STAR DIGITAL, I need doorstep appliance repair service in Kanpur.'
-  return `https://wa.me/${num}?text=${encodeURIComponent(msg)}`
+  // Using official api.whatsapp.com ensures direct app launch on Android and iOS without popup-blocker issues
+  return `https://api.whatsapp.com/send?phone=${num}&text=${encodeURIComponent(msg)}`
 }
 
 // ── Tel Dialer Link ────────────────────────────────────────────────────────────

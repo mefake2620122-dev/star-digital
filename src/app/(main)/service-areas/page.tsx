@@ -121,8 +121,6 @@ export default function ServiceAreasPage() {
                   </a>
                   <a
                     href={getWhatsAppUrl(`Hello STAR DIGITAL, I am located in ${area.name}, Kanpur and need an appliance repair technician.`)}
-                    target="_blank"
-                    rel="noopener"
                     className="text-xs font-semibold text-[#128C7E] hover:text-[#075E54] inline-flex items-center gap-1.5"
                   >
                     <MessageSquare className="w-3.5 h-3.5 fill-current text-[#25D366]" />

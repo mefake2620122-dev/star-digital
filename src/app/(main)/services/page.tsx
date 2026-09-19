@@ -118,8 +118,6 @@ export default async function ServicesPage() {
                 </Link>
                 <a
                   href={getWhatsAppUrl(`Hello STAR DIGITAL, I need doorstep repair for ${service.name} in Kanpur. Please share earliest technician availability.`)}
-                  target="_blank"
-                  rel="noopener"
                   className="inline-flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-[#25D366] hover:bg-[#20bd5a] text-white text-xs font-semibold transition-all shadow-sm active:scale-95"
                 >
                   <MessageSquare className="w-3.5 h-3.5 fill-current" />

@@ -106,8 +106,6 @@ export default function PricingPage() {
           <div className="flex flex-wrap items-center justify-center gap-3">
             <a
               href={getWhatsAppUrl('Hello STAR DIGITAL, I need a price estimate for my appliance repair in Kanpur.')}
-              target="_blank"
-              rel="noopener"
               className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-[#25D366] text-white text-sm font-bold hover:bg-[#20bd5a] transition-all shadow-sm"
             >
               <MessageSquare className="w-4 h-4 fill-current" />

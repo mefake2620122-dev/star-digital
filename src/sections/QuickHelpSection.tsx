@@ -52,7 +52,7 @@ export function QuickHelpSection() {
       const url = getWhatsAppUrl(
         `Hello STAR DIGITAL, I have an appliance issue in Kanpur: "${selected.label}". Please share technician availability.`
       )
-      window.open(url, '_blank', 'noopener,noreferrer')
+      window.location.href = url
     }
   }
 

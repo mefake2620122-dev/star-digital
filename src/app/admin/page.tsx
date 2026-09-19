@@ -897,11 +897,9 @@ export default function AdminDashboardPage() {
                             <span>Call</span>
                           </a>
                           <a
-                            href={`https://wa.me/91${inq.phone.replace(/[^0-9]/g, '')}?text=Hello%20${encodeURIComponent(
+                            href={`https://api.whatsapp.com/send?phone=${inq.phone.replace(/[^0-9]/g, '').length === 10 ? '91' + inq.phone.replace(/[^0-9]/g, '') : inq.phone.replace(/[^0-9]/g, '')}&text=Hello%20${encodeURIComponent(
                               inq.name
                             )},%20STAR%20DIGITAL%20here%20regarding%20your%20appliance%20service%20inquiry.`}
-                            target="_blank"
-                            rel="noopener"
                             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-white text-xs font-bold"
                           >
                             <MessageSquare className="w-3.5 h-3.5 fill-current" />

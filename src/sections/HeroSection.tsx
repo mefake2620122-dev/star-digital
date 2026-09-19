@@ -48,20 +48,20 @@ export async function HeroSection() {
           {/* Left Hero Content */}
           <div className="lg:col-span-7 space-y-6 sm:space-y-8 text-center lg:text-left">
             {/* Top Trust Pill */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-red-50 border border-red-100 text-red-700 text-xs sm:text-sm font-medium">
-              <MapPin className="w-3.5 h-3.5 text-red-600" />
-              <span>{heroBadge}</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-red-600" />
-              <span className="text-slate-500">Doorstep Service</span>
+            <div className="inline-flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-1 sm:py-1.5 rounded-full bg-red-50 border border-red-100 text-red-700 text-xs sm:text-sm font-medium max-w-full">
+              <MapPin className="w-3.5 h-3.5 text-red-600 shrink-0" />
+              <span className="truncate max-w-[200px] sm:max-w-none">{heroBadge}</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-red-600 shrink-0" />
+              <span className="text-slate-500 whitespace-nowrap">Doorstep Service</span>
             </div>
 
             {/* Headline */}
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 leading-[1.1]">
+            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 leading-[1.15] break-words">
               {heroTitle}
             </h1>
 
             {/* Sub-copy */}
-            <p className="text-base sm:text-lg lg:text-xl text-slate-600 max-w-xl mx-auto lg:mx-0 leading-relaxed font-normal">
+            <p className="text-sm sm:text-lg lg:text-xl text-slate-600 max-w-xl mx-auto lg:mx-0 leading-relaxed font-normal">
               {heroSubtitle}
             </p>
 
@@ -74,7 +74,7 @@ export async function HeroSection() {
                 <Link
                   key={app.slug}
                   href={`/services/${app.slug}`}
-                  className="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-white border border-slate-200 hover:border-red-600 hover:text-red-600 shadow-sm transition-all"
+                  className="px-3 sm:px-3.5 py-1.5 rounded-full text-xs font-semibold bg-white border border-slate-200 hover:border-red-600 hover:text-red-600 shadow-sm transition-all"
                 >
                   {app.name}
                 </Link>
@@ -82,16 +82,14 @@ export async function HeroSection() {
             </div>
 
             {/* Primary CTA Buttons */}
-            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3.5 pt-2">
+            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 pt-2">
               {/* WhatsApp CTA */}
               <a
                 href={getWhatsAppUrl(
                   'Hello STAR DIGITAL, I need doorstep appliance repair service in Kanpur.',
                   businessWhatsapp
                 )}
-                target="_blank"
-                rel="noopener"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 text-sm sm:text-base font-bold rounded-2xl bg-[#25D366] text-white hover:bg-[#20bd5a] active:scale-[0.98] transition-all shadow-md shadow-emerald-600/20"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 text-sm sm:text-base font-bold rounded-2xl bg-[#25D366] text-white active:bg-[#20bd5a] hover:bg-[#20bd5a] active:scale-[0.98] transition-all shadow-md shadow-emerald-600/20"
                 aria-label="Chat on WhatsApp with Star Digital technician"
               >
                 <MessageSquare className="w-4 h-4 fill-current" />
@@ -101,7 +99,7 @@ export async function HeroSection() {
               {/* Call CTA */}
               <a
                 href={getDialerUrl(businessPhone)}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 text-sm sm:text-base font-bold rounded-2xl bg-red-600 text-white hover:bg-red-700 active:scale-[0.98] transition-all shadow-md shadow-red-600/20"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 text-sm sm:text-base font-bold rounded-2xl bg-red-600 text-white active:bg-red-700 hover:bg-red-700 active:scale-[0.98] transition-all shadow-md shadow-red-600/20"
                 aria-label={`Call Star Digital at ${businessPhone}`}
               >
                 <Phone className="w-4 h-4 fill-current" />
@@ -118,7 +116,7 @@ export async function HeroSection() {
             </div>
 
             {/* Micro Trust */}
-            <div className="pt-2 flex items-center justify-center lg:justify-start gap-6 text-xs text-slate-500">
+            <div className="pt-2 flex flex-wrap items-center justify-center lg:justify-start gap-4 sm:gap-6 text-xs text-slate-500">
               <div className="flex items-center gap-1.5">
                 <Clock className="w-4 h-4 text-emerald-600" />
                 <span>45–60 Min Rapid Arrival</span>
@@ -137,24 +135,24 @@ export async function HeroSection() {
                 <img
                   src={heroImage}
                   alt="Professional technician inspecting electronics in Kanpur"
-                  className="w-full h-80 sm:h-96 object-cover object-center opacity-90 hover:scale-105 transition-transform duration-700"
+                  className="w-full h-72 sm:h-96 object-cover object-center opacity-90 hover:scale-105 transition-transform duration-700"
                   loading="eager"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent" />
 
                 {/* Floating Badge */}
-                <div className="absolute bottom-5 inset-x-5 p-4 rounded-2xl bg-white/95 backdrop-blur-md border border-slate-200/60 shadow-lg text-slate-900">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-xs font-bold text-red-600 uppercase tracking-wider">
+                <div className="absolute bottom-3 sm:bottom-5 inset-x-3 sm:inset-x-5 p-3 sm:p-4 rounded-2xl bg-white/95 backdrop-blur-md border border-slate-200/60 shadow-lg text-slate-900">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="min-w-0">
+                      <p className="text-[11px] sm:text-xs font-bold text-red-600 uppercase tracking-wider">
                         Kanpur Doorstep Service
                       </p>
-                      <h4 className="text-sm font-bold text-slate-900 mt-0.5">
+                      <h4 className="text-xs sm:text-sm font-bold text-slate-900 mt-0.5 truncate">
                         Qualified Technicians At Your Door
                       </h4>
                     </div>
-                    <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
-                      <ShieldCheck className="w-5 h-5" />
+                    <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                      <ShieldCheck className="w-4 h-4 sm:w-5 sm:h-5" />
                     </div>
                   </div>
                 </div>
