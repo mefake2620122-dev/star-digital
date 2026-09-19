@@ -3,8 +3,19 @@
 import Link from 'next/link'
 import { Star, MessageSquare, Phone, MapPin, Clock, Mail, Shield } from 'lucide-react'
 import { SITE_CONFIG, getWhatsAppUrl, getDialerUrl } from '@/lib/site'
+import { useBusinessContact } from '@/context/ContactContext'
+import type { ContactInfo } from '@/lib/contact'
 
-export function Footer() {
+interface FooterProps {
+  contact?: ContactInfo
+}
+
+export function Footer({ contact }: FooterProps) {
+  const liveContact = useBusinessContact()
+  const activePhone = contact?.phone || liveContact.phone || SITE_CONFIG.phone
+  const activeWhatsapp = contact?.whatsapp || liveContact.whatsapp || SITE_CONFIG.whatsapp
+  const activeSecondary = contact?.secondaryPhone || liveContact.secondaryPhone || SITE_CONFIG.secondaryPhone
+
   const services = [
     { name: 'AC Repair', slug: 'ac' },
     { name: 'Refrigerator Repair', slug: 'refrigerator' },
@@ -46,7 +57,7 @@ export function Footer() {
 
             <div className="flex flex-wrap gap-3">
               <a
-                href={getWhatsAppUrl('Hello STAR DIGITAL, I need doorstep appliance repair in Kanpur.')}
+                href={getWhatsAppUrl('Hello STAR DIGITAL, I need doorstep appliance repair in Kanpur.', activeWhatsapp)}
                 className="inline-flex items-center gap-2 px-4 py-2.5 rounded-apple bg-[#25D366] text-white text-sm font-semibold hover:bg-[#20bd5a] active:scale-[0.97] transition-all"
                 aria-label="WhatsApp Chat"
               >
@@ -55,12 +66,12 @@ export function Footer() {
               </a>
 
               <a
-                href={getDialerUrl(SITE_CONFIG.phone)}
+                href={getDialerUrl(activePhone)}
                 className="inline-flex items-center gap-2 px-4 py-2.5 rounded-apple bg-white/10 hover:bg-white/20 text-white text-sm font-semibold active:scale-[0.97] transition-all"
-                aria-label={`Call ${SITE_CONFIG.phone}`}
+                aria-label={`Call ${activePhone}`}
               >
                 <Phone className="w-4 h-4" />
-                <span>{SITE_CONFIG.phone}</span>
+                <span>{activePhone}</span>
               </a>
             </div>
           </div>
@@ -116,12 +127,14 @@ export function Footer() {
               <li className="flex items-center gap-2">
                 <Phone className="w-4 h-4 text-star-400 shrink-0" />
                 <div>
-                  <a href={getDialerUrl(SITE_CONFIG.phone)} className="hover:text-white transition-colors block">
-                    {SITE_CONFIG.phone}
+                  <a href={getDialerUrl(activePhone)} className="hover:text-white transition-colors block">
+                    {activePhone}
                   </a>
-                  <a href={getDialerUrl(SITE_CONFIG.secondaryPhone)} className="text-xs text-white/50 hover:text-white transition-colors block">
-                    Alt: {SITE_CONFIG.secondaryPhone}
-                  </a>
+                  {activeSecondary && (
+                    <a href={getDialerUrl(activeSecondary)} className="text-xs text-white/50 hover:text-white transition-colors block">
+                      Alt: {activeSecondary}
+                    </a>
+                  )}
                 </div>
               </li>
               <li className="flex items-center gap-2">

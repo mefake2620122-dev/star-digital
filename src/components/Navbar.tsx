@@ -5,8 +5,18 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Phone, Menu, X, Star, MessageSquare, Shield } from 'lucide-react'
 import { SITE_CONFIG, getDialerUrl, getWhatsAppUrl } from '@/lib/site'
+import { useBusinessContact } from '@/context/ContactContext'
+import type { ContactInfo } from '@/lib/contact'
 
-export function Navbar() {
+interface NavbarProps {
+  contact?: ContactInfo
+}
+
+export function Navbar({ contact }: NavbarProps) {
+  const liveContact = useBusinessContact()
+  const activePhone = contact?.phone || liveContact.phone || SITE_CONFIG.phone
+  const activeWhatsapp = contact?.whatsapp || liveContact.whatsapp || SITE_CONFIG.whatsapp
+
   const [isScrolled, setIsScrolled] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const pathname = usePathname()
@@ -81,7 +91,7 @@ export function Navbar() {
           {/* Right Actions */}
           <div className="hidden sm:flex items-center gap-2">
             <a
-              href={getWhatsAppUrl('Hello STAR DIGITAL, I need urgent appliance repair consultation in Kanpur.')}
+              href={getWhatsAppUrl('Hello STAR DIGITAL, I need urgent appliance repair consultation in Kanpur.', activeWhatsapp)}
               className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs lg:text-sm font-semibold rounded-apple bg-[#25D366] text-white hover:bg-[#20bd5a] active:scale-[0.98] transition-all shadow-sm"
               aria-label="Chat with technician on WhatsApp"
             >
@@ -90,9 +100,9 @@ export function Navbar() {
             </a>
 
             <a
-              href={getDialerUrl(SITE_CONFIG.phone)}
+              href={getDialerUrl(activePhone)}
               className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs lg:text-sm font-semibold rounded-apple bg-star-600 text-white hover:bg-star-700 active:scale-[0.98] transition-all shadow-sm"
-              aria-label={`Call Star Digital at ${SITE_CONFIG.phone}`}
+              aria-label={`Call Star Digital at ${activePhone}`}
             >
               <Phone className="w-3.5 h-3.5 fill-current" />
               <span>Call Now</span>
@@ -163,7 +173,7 @@ export function Navbar() {
 
             <div className="pt-4 border-t border-slate-100 flex flex-col gap-2.5">
               <a
-                href={getWhatsAppUrl('Hello STAR DIGITAL, I need doorstep appliance repair service in Kanpur.')}
+                href={getWhatsAppUrl('Hello STAR DIGITAL, I need doorstep appliance repair service in Kanpur.', activeWhatsapp)}
                 onClick={() => setMobileMenuOpen(false)}
                 className="flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-[#25D366] active:bg-[#20bd5a] text-white font-bold text-sm shadow-md"
               >
@@ -171,12 +181,12 @@ export function Navbar() {
                 <span>Chat on WhatsApp</span>
               </a>
               <a
-                href={getDialerUrl(SITE_CONFIG.phone)}
+                href={getDialerUrl(activePhone)}
                 onClick={() => setMobileMenuOpen(false)}
                 className="flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-red-600 active:bg-red-700 text-white font-bold text-sm shadow-md"
               >
                 <Phone className="w-4 h-4 fill-current" />
-                <span>Call {SITE_CONFIG.phone}</span>
+                <span>Call {activePhone}</span>
               </a>
               <Link
                 href="/admin"

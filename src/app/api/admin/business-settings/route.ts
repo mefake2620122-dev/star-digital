@@ -13,6 +13,8 @@ export async function GET(req: NextRequest) {
   }
 }
 
+import { revalidatePath } from 'next/cache'
+
 export async function PUT(req: NextRequest) {
   if (!getAuthFromHeader(req.headers.get('authorization')))
     return jsonError('Unauthorized', 'UNAUTHORIZED', 401)
@@ -29,6 +31,38 @@ export async function PUT(req: NextRequest) {
         ...(address ? { address } : {}),
       },
     })
+
+    // Also sync siteContent keys
+    if (phone) {
+      await prisma.siteContent.upsert({
+        where: { key: 'business_phone' },
+        update: { value: phone },
+        create: { key: 'business_phone', value: phone, label: 'Primary Phone', type: 'phone', group: 'contact' },
+      }).catch(() => null)
+      await prisma.siteContent.upsert({
+        where: { key: 'contact_phone' },
+        update: { value: phone },
+        create: { key: 'contact_phone', value: phone, label: 'Helpline Phone', type: 'phone', group: 'contact' },
+      }).catch(() => null)
+    }
+
+    if (whatsapp) {
+      await prisma.siteContent.upsert({
+        where: { key: 'business_whatsapp' },
+        update: { value: whatsapp },
+        create: { key: 'business_whatsapp', value: whatsapp, label: 'WhatsApp Number', type: 'phone', group: 'contact' },
+      }).catch(() => null)
+      await prisma.siteContent.upsert({
+        where: { key: 'contact_whatsapp' },
+        update: { value: whatsapp },
+        create: { key: 'contact_whatsapp', value: whatsapp, label: 'Contact WhatsApp', type: 'phone', group: 'contact' },
+      }).catch(() => null)
+    }
+
+    try {
+      revalidatePath('/', 'layout')
+    } catch {}
+
     return jsonOk(updated)
   } catch {
     return jsonError('Failed to update business settings', 'SERVER_ERROR', 500)

@@ -3,9 +3,9 @@ export const SITE_CONFIG = {
   tagline: 'Expert TV & Appliance Repair. Right At Your Doorstep.',
   description:
     'Kanpur’s trusted doorstep TV & home appliance repair center since 2014. Expert service for LED/LCD TV, Refrigerator, AC, and Washing Machine.',
-  phone: '+91 90350 85031',
+  phone: '+91 90058 88922',
   whatsapp: '+91 90058 88922',
-  secondaryPhone: '+91 90058 88922',
+  secondaryPhone: '+91 90350 85031',
   email: 'support@stardigital.in',
   address: 'Maqbara Gwaltoli, Near Elgin Mill, Civil Lines, Kanpur, Uttar Pradesh 208001, India',
   landmark: 'Near Elgin Mill, Gwaltoli',

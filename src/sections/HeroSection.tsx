@@ -29,8 +29,8 @@ export async function HeroSection() {
   const heroImage =
     content.hero_image ||
     'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=1000&q=80'
-  const businessPhone = content.business_phone || SITE_CONFIG.phone
-  const businessWhatsapp = content.business_whatsapp || SITE_CONFIG.whatsapp
+  const businessPhone = content.business_phone || content.contact_phone || SITE_CONFIG.phone
+  const businessWhatsapp = content.business_whatsapp || content.contact_whatsapp || SITE_CONFIG.whatsapp
 
   const appliances = [
     { name: 'AC', slug: 'ac' },

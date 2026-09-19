@@ -93,6 +93,11 @@ export default function AdminDashboardPage() {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [changingPassword, setChangingPassword] = useState(false)
 
+  // Quick Live Contact Numbers
+  const [quickPhone, setQuickPhone] = useState('+91 90058 88922')
+  const [quickWhatsapp, setQuickWhatsapp] = useState('+91 90058 88922')
+  const [savingQuickContact, setSavingQuickContact] = useState(false)
+
   const getToken = () => localStorage.getItem('admin_token')
 
   const authFetch = async (url: string, options: RequestInit = {}) => {
@@ -155,6 +160,11 @@ export default function AdminDashboardPage() {
           initialEdits[item.key] = item.value
         })
         setCmsEdits(initialEdits)
+
+        const p = initialEdits['business_phone'] || initialEdits['contact_phone'] || '+91 90058 88922'
+        const w = initialEdits['business_whatsapp'] || initialEdits['contact_whatsapp'] || '+91 90058 88922'
+        setQuickPhone(p)
+        setQuickWhatsapp(w)
       }
 
       if (inqRes.success) setInquiries(inqRes.data || [])
@@ -201,6 +211,43 @@ export default function AdminDashboardPage() {
       setAlertMsg({ type: 'error', text: err.message || 'Error updating content' })
     } finally {
       setSavingKey(null)
+    }
+  }
+
+  // Save quick phone & whatsapp numbers directly across the site
+  const handleSaveQuickContact = async () => {
+    try {
+      setSavingQuickContact(true)
+      const res = await authFetch('/api/admin/business-settings', {
+        method: 'PUT',
+        body: JSON.stringify({
+          phone: quickPhone.trim(),
+          whatsapp: quickWhatsapp.trim(),
+        }),
+      })
+
+      if (res.success || !res.error) {
+        // Also update local cmsEdits
+        setCmsEdits((prev) => ({
+          ...prev,
+          business_phone: quickPhone.trim(),
+          contact_phone: quickPhone.trim(),
+          business_whatsapp: quickWhatsapp.trim(),
+          contact_whatsapp: quickWhatsapp.trim(),
+        }))
+
+        setAlertMsg({
+          type: 'success',
+          text: `Live Phone & WhatsApp numbers updated to ${quickPhone.trim()} across entire website!`,
+        })
+        setTimeout(() => setAlertMsg(null), 4500)
+      } else {
+        throw new Error(res.error || 'Failed to update numbers')
+      }
+    } catch (err: any) {
+      setAlertMsg({ type: 'error', text: err.message || 'Error updating numbers' })
+    } finally {
+      setSavingQuickContact(false)
     }
   }
 
@@ -597,6 +644,83 @@ export default function AdminDashboardPage() {
         {/* ── TAB 1: WEBSITE CONTENT CMS ── */}
         {activeTab === 'cms' && (
           <div className="space-y-8">
+            {/* Quick Live Contact Numbers Card */}
+            <div className="p-6 sm:p-8 rounded-3xl bg-slate-900 text-white shadow-xl border border-slate-800">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-800">
+                <div className="flex items-center gap-3.5">
+                  <div className="w-11 h-11 rounded-2xl bg-red-600/20 text-red-500 flex items-center justify-center border border-red-500/30">
+                    <Phone className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg sm:text-xl font-extrabold text-white flex items-center gap-2">
+                      <span>Live Calling &amp; WhatsApp Helplines</span>
+                      <span className="px-2.5 py-0.5 rounded-full text-[10px] uppercase font-bold tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                        Live Site Sync
+                      </span>
+                    </h2>
+                    <p className="text-xs text-slate-400 mt-0.5">
+                      Changing numbers here updates instantly across Navbar, Sticky Mobile Bar, Hero, Buttons, and Footer.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                <div className="space-y-2">
+                  <label className="block text-xs font-bold text-slate-300 flex items-center gap-1.5">
+                    <Phone className="w-3.5 h-3.5 text-red-400" />
+                    <span>Primary Calling Phone Number</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={quickPhone}
+                    onChange={(e) => setQuickPhone(e.target.value)}
+                    placeholder="+91 90058 88922"
+                    className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-700 text-sm font-bold text-white focus:outline-none focus:border-red-500 transition-colors"
+                  />
+                  <p className="text-[11px] text-slate-400">
+                    Appears on all "Call Now" buttons, phone dialer links &amp; contact sections.
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="block text-xs font-bold text-slate-300 flex items-center gap-1.5">
+                    <MessageSquare className="w-3.5 h-3.5 text-emerald-400" />
+                    <span>WhatsApp Chat &amp; Booking Number</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={quickWhatsapp}
+                    onChange={(e) => setQuickWhatsapp(e.target.value)}
+                    placeholder="+91 90058 88922"
+                    className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-700 text-sm font-bold text-white focus:outline-none focus:border-emerald-500 transition-colors"
+                  />
+                  <p className="text-[11px] text-slate-400">
+                    Triggers direct WhatsApp app launch on mobile phones &amp; WhatsApp Web on desktop.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-6 pt-5 border-t border-slate-800">
+                <div className="text-xs text-slate-400 flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                  <span>Active Live Number: <strong className="text-white">{quickPhone}</strong></span>
+                </div>
+
+                <button
+                  onClick={handleSaveQuickContact}
+                  disabled={savingQuickContact}
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-red-600 hover:bg-red-700 active:scale-95 text-white text-xs font-bold transition-all shadow-md shadow-red-600/25 disabled:opacity-50"
+                >
+                  {savingQuickContact ? (
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  ) : (
+                    <Save className="w-4 h-4" />
+                  )}
+                  <span>Update All Website Numbers</span>
+                </button>
+              </div>
+            </div>
             <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-100">
                 <div>

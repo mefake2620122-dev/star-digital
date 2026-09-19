@@ -4,8 +4,13 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { Phone, MessageSquare, MapPin, Clock, Send, CheckCircle2, AlertCircle } from 'lucide-react'
 import { SITE_CONFIG, getDialerUrl, getWhatsAppUrl } from '@/lib/site'
+import { useBusinessContact } from '@/context/ContactContext'
 
 export default function ContactPage() {
+  const contact = useBusinessContact()
+  const activePhone = contact.phone || SITE_CONFIG.phone
+  const activeWhatsapp = contact.whatsapp || SITE_CONFIG.whatsapp
+  const activeSecondary = contact.secondaryPhone || SITE_CONFIG.secondaryPhone
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -90,17 +95,19 @@ export default function ContactPage() {
                       Helpline & Calling
                     </p>
                     <a
-                      href={getDialerUrl(SITE_CONFIG.phone)}
+                      href={getDialerUrl(activePhone)}
                       className="font-bold text-slate-900 hover:text-red-600 transition-colors text-base block"
                     >
-                      {SITE_CONFIG.phone}
+                      {activePhone}
                     </a>
-                    <a
-                      href={getDialerUrl(SITE_CONFIG.secondaryPhone)}
-                      className="font-semibold text-slate-600 hover:text-red-600 transition-colors text-xs block mt-0.5"
-                    >
-                      Alt Phone: {SITE_CONFIG.secondaryPhone}
-                    </a>
+                    {activeSecondary && (
+                      <a
+                        href={getDialerUrl(activeSecondary)}
+                        className="font-semibold text-slate-600 hover:text-red-600 transition-colors text-xs block mt-0.5"
+                      >
+                        Alt Phone: {activeSecondary}
+                      </a>
+                    )}
                     <p className="text-slate-500 text-[11px] mt-0.5">
                       Technical Desk: Mr. Nafees Alam (Direct dispatch)
                     </p>
@@ -117,7 +124,7 @@ export default function ContactPage() {
                       WhatsApp Assistance
                     </p>
                     <a
-                      href={getWhatsAppUrl('Hello STAR DIGITAL, I have an appliance query.', SITE_CONFIG.whatsapp)}
+                      href={getWhatsAppUrl('Hello STAR DIGITAL, I have an appliance query.', activeWhatsapp)}
                       className="font-bold text-slate-900 hover:text-[#25D366] transition-colors text-base block"
                     >
                       Chat On WhatsApp

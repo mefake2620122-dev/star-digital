@@ -2,7 +2,8 @@
 
 import { useState } from 'react'
 import { HelpCircle, CheckCircle2, MessageSquare } from 'lucide-react'
-import { getWhatsAppUrl } from '@/lib/site'
+import { SITE_CONFIG, getWhatsAppUrl } from '@/lib/site'
+import { useBusinessContact } from '@/context/ContactContext'
 
 const commonProblems = [
   {
@@ -44,6 +45,10 @@ const commonProblems = [
 ]
 
 export function QuickHelpSection() {
+  const contact = useBusinessContact()
+  const activeWhatsapp = (contact.whatsapp || SITE_CONFIG.whatsapp).replace(/[^0-9]/g, '')
+  const normalizedWA = activeWhatsapp.length === 10 ? '91' + activeWhatsapp : (activeWhatsapp || '919005888922')
+
   const [selectedId, setSelectedId] = useState(commonProblems[0].id)
 
   const handleGetHelp = () => {
@@ -54,10 +59,10 @@ export function QuickHelpSection() {
         typeof navigator !== 'undefined' &&
         /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
       if (isMobile) {
-        window.location.href = `whatsapp://send?phone=919005888922&text=${encodeURIComponent(msg)}`
+        window.location.href = `whatsapp://send?phone=${normalizedWA}&text=${encodeURIComponent(msg)}`
       } else {
         window.open(
-          `https://web.whatsapp.com/send?phone=919005888922&text=${encodeURIComponent(msg)}`,
+          `https://web.whatsapp.com/send?phone=${normalizedWA}&text=${encodeURIComponent(msg)}`,
           '_blank',
           'noopener,noreferrer'
         )

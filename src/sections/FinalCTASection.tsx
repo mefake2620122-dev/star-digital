@@ -1,8 +1,15 @@
+'use client'
+
 import Link from 'next/link'
 import { Phone, MessageSquare, ArrowRight, ShieldCheck } from 'lucide-react'
 import { SITE_CONFIG, getDialerUrl, getWhatsAppUrl } from '@/lib/site'
+import { useBusinessContact } from '@/context/ContactContext'
 
 export function FinalCTASection() {
+  const contact = useBusinessContact()
+  const activePhone = contact.phone || SITE_CONFIG.phone
+  const activeWhatsapp = contact.whatsapp || SITE_CONFIG.whatsapp
+
   return (
     <section className="py-20 sm:py-28 bg-slate-950 text-white relative overflow-hidden">
       {/* Subtle radial gradient background */}
@@ -26,15 +33,15 @@ export function FinalCTASection() {
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
             <a
-              href={getDialerUrl()}
+              href={getDialerUrl(activePhone)}
               className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-2xl bg-red-600 hover:bg-red-700 text-white font-bold text-base shadow-lg shadow-red-600/30 active:scale-[0.98] transition-all"
             >
               <Phone className="w-4 h-4 fill-current" />
-              <span>Call Now: {SITE_CONFIG.phone}</span>
+              <span>Call Now: {activePhone}</span>
             </a>
 
             <a
-              href={getWhatsAppUrl('Hello Star Digital, I need immediate appliance repair help in Kanpur.')}
+              href={getWhatsAppUrl('Hello Star Digital, I need immediate appliance repair help in Kanpur.', activeWhatsapp)}
               className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-2xl bg-[#25D366] active:bg-[#20bd5a] hover:bg-[#20bd5a] text-white font-bold text-base shadow-lg shadow-emerald-600/20 active:scale-[0.98] transition-all"
             >
               <MessageSquare className="w-4 h-4 fill-current" />
