@@ -193,3 +193,20 @@ model Photo {
   updatedAt DateTime @updatedAt
 }
 
+/// Transparent doorstep repair pricing rate cards editable from Admin Panel
+model PricingItem {
+  id          String   @id @default(cuid())
+  categoryId  String   @default("tv") // "tv" | "refrigerator" | "washing-machine" | "ac" | "others"
+  category    String   @default("LED / Smart TV")
+  name        String
+  priceRange  String
+  serviceTime String   @default("Same Day")
+  description String
+  features    String   @default("[]")
+  popular     Boolean  @default(false)
+  active      Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+

@@ -31,9 +31,13 @@ import {
   UploadCloud,
   Plus,
   X,
+  BadgePercent,
+  Tag,
+  IndianRupee,
+  Edit2,
 } from 'lucide-react'
 
-type TabType = 'cms' | 'inquiries' | 'services' | 'photos' | 'reviews' | 'areas' | 'settings'
+type TabType = 'cms' | 'pricing' | 'inquiries' | 'services' | 'photos' | 'reviews' | 'areas' | 'settings'
 
 interface SiteContentItem {
   id: string
@@ -71,6 +75,25 @@ export default function AdminDashboardPage() {
   const [photoLocation, setPhotoLocation] = useState('Kanpur')
   const [uploadingPhotoFile, setUploadingPhotoFile] = useState(false)
   const [savingPhoto, setSavingPhoto] = useState(false)
+
+  // Pricing & Rate Card states
+  const [pricingItems, setPricingItems] = useState<any[]>([])
+  const [pricingFilter, setPricingFilter] = useState('ALL')
+  const [pricingSearch, setPricingSearch] = useState('')
+  const [isPricingModalOpen, setIsPricingModalOpen] = useState(false)
+  const [editingPricingItem, setEditingPricingItem] = useState<any | null>(null)
+  const [priceName, setPriceName] = useState('')
+  const [priceCategoryId, setPriceCategoryId] = useState('tv')
+  const [priceCategory, setPriceCategory] = useState('LED / Smart TV')
+  const [priceRange, setPriceRange] = useState('')
+  const [priceServiceTime, setPriceServiceTime] = useState('Same Day')
+  const [priceDescription, setPriceDescription] = useState('')
+  const [priceFeatures, setPriceFeatures] = useState('')
+  const [pricePopular, setPricePopular] = useState(false)
+  const [priceActive, setPriceActive] = useState(true)
+  const [priceSortOrder, setPriceSortOrder] = useState(0)
+  const [savingPricing, setSavingPricing] = useState(false)
+  const [deletingPricingId, setDeletingPricingId] = useState<string | null>(null)
 
   // Profile & Username
   const [currentUser, setCurrentUser] = useState<{
@@ -134,7 +157,7 @@ export default function AdminDashboardPage() {
   const loadAllData = async () => {
     try {
       setLoading(true)
-      const [cmsRes, inqRes, servRes, revRes, areaRes, statsRes, profRes, photosRes] = await Promise.all([
+      const [cmsRes, inqRes, servRes, revRes, areaRes, statsRes, profRes, photosRes, pricingRes] = await Promise.all([
         authFetch('/api/admin/site-content'),
         authFetch('/api/admin/inquiries'),
         authFetch('/api/admin/services'),
@@ -143,6 +166,7 @@ export default function AdminDashboardPage() {
         authFetch('/api/admin/stats'),
         authFetch('/api/admin/profile').catch(() => null),
         authFetch('/api/admin/photos').catch(() => null),
+        authFetch('/api/admin/pricing').catch(() => null),
       ])
 
       if (profRes?.success && profRes.data) {
@@ -152,6 +176,10 @@ export default function AdminDashboardPage() {
 
       if (photosRes?.success && Array.isArray(photosRes.data)) {
         setPhotos(photosRes.data)
+      }
+
+      if (pricingRes?.success && Array.isArray(pricingRes.data)) {
+        setPricingItems(pricingRes.data)
       }
 
       if (cmsRes.success && cmsRes.data) {
@@ -504,6 +532,173 @@ export default function AdminDashboardPage() {
     }
   }
 
+  // ── Pricing Handlers ──
+  const categoryNamesMap: Record<string, string> = {
+    tv: 'LED / Smart TV',
+    refrigerator: 'Refrigerator',
+    'washing-machine': 'Washing Machine',
+    ac: 'Air Conditioner (AC)',
+    others: 'Microwave & Other Appliances',
+  }
+
+  const handleOpenAddPricingModal = () => {
+    setEditingPricingItem(null)
+    setPriceName('')
+    setPriceCategoryId('tv')
+    setPriceCategory('LED / Smart TV')
+    setPriceRange('')
+    setPriceServiceTime('Same Day')
+    setPriceDescription('')
+    setPriceFeatures('')
+    setPricePopular(false)
+    setPriceActive(true)
+    setPriceSortOrder(pricingItems.length + 1)
+    setIsPricingModalOpen(true)
+  }
+
+  const handleOpenEditPricingModal = (item: any) => {
+    setEditingPricingItem(item)
+    setPriceName(item.name || '')
+    setPriceCategoryId(item.categoryId || 'tv')
+    setPriceCategory(item.category || categoryNamesMap[item.categoryId] || 'Other Services')
+    setPriceRange(item.priceRange || '')
+    setPriceServiceTime(item.serviceTime || 'Same Day')
+    setPriceDescription(item.description || '')
+    setPricePopular(Boolean(item.popular))
+    setPriceActive(item.active !== false)
+    setPriceSortOrder(item.sortOrder || 0)
+
+    let feats = ''
+    if (Array.isArray(item.features)) {
+      feats = item.features.join('\n')
+    } else if (typeof item.features === 'string') {
+      try {
+        const parsed = JSON.parse(item.features)
+        feats = Array.isArray(parsed) ? parsed.join('\n') : item.features
+      } catch {
+        feats = item.features
+      }
+    }
+    setPriceFeatures(feats)
+    setIsPricingModalOpen(true)
+  }
+
+  const handleSavePricing = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!priceName.trim() || !priceRange.trim()) {
+      setAlertMsg({ type: 'error', text: 'Service Name and Price Range are required.' })
+      return
+    }
+
+    try {
+      setSavingPricing(true)
+      const featuresArray = priceFeatures
+        .split('\n')
+        .map((f) => f.trim())
+        .filter(Boolean)
+
+      const payload = {
+        name: priceName.trim(),
+        categoryId: priceCategoryId,
+        category: priceCategory,
+        priceRange: priceRange.trim(),
+        serviceTime: priceServiceTime.trim() || 'Same Day',
+        description: priceDescription.trim(),
+        features: featuresArray,
+        popular: pricePopular,
+        active: priceActive,
+        sortOrder: Number(priceSortOrder) || 0,
+      }
+
+      if (editingPricingItem) {
+        const res = await authFetch(`/api/admin/pricing/${editingPricingItem.id}`, {
+          method: 'PUT',
+          body: JSON.stringify(payload),
+        })
+        if (res.success && res.data) {
+          setPricingItems(pricingItems.map((p) => (p.id === res.data.id ? res.data : p)))
+          setAlertMsg({ type: 'success', text: 'Rate card updated and live on website!' })
+          setIsPricingModalOpen(false)
+        } else {
+          throw new Error(res.error || 'Failed to update pricing')
+        }
+      } else {
+        const res = await authFetch('/api/admin/pricing', {
+          method: 'POST',
+          body: JSON.stringify(payload),
+        })
+        if (res.success && res.data) {
+          setPricingItems([res.data, ...pricingItems])
+          setAlertMsg({ type: 'success', text: 'New rate card created and published to live website!' })
+          setIsPricingModalOpen(false)
+        } else {
+          throw new Error(res.error || 'Failed to create pricing item')
+        }
+      }
+    } catch (err: any) {
+      setAlertMsg({ type: 'error', text: err.message || 'Error saving rate card' })
+    } finally {
+      setSavingPricing(false)
+    }
+  }
+
+  const handleDeletePricing = async (id: string, name: string) => {
+    if (!window.confirm(`Are you sure you want to delete rate card "${name}"?`)) return
+
+    try {
+      setDeletingPricingId(id)
+      const res = await authFetch(`/api/admin/pricing/${id}`, { method: 'DELETE' })
+      if (res.success) {
+        setPricingItems(pricingItems.filter((p) => p.id !== id))
+        setAlertMsg({ type: 'success', text: `Rate card "${name}" deleted.` })
+      } else {
+        throw new Error(res.error || 'Failed to delete pricing item')
+      }
+    } catch (err: any) {
+      setAlertMsg({ type: 'error', text: err.message || 'Delete failed' })
+    } finally {
+      setDeletingPricingId(null)
+    }
+  }
+
+  const handleTogglePricingActive = async (item: any) => {
+    const newStatus = !item.active
+    try {
+      const res = await authFetch(`/api/admin/pricing/${item.id}`, {
+        method: 'PUT',
+        body: JSON.stringify({ active: newStatus }),
+      })
+      if (res.success && res.data) {
+        setPricingItems(pricingItems.map((p) => (p.id === item.id ? res.data : p)))
+        setAlertMsg({
+          type: 'success',
+          text: `Rate card marked ${newStatus ? 'Active' : 'Inactive'}`,
+        })
+      }
+    } catch (err: any) {
+      setAlertMsg({ type: 'error', text: err.message || 'Toggle failed' })
+    }
+  }
+
+  const handleTogglePricingPopular = async (item: any) => {
+    const newPopular = !item.popular
+    try {
+      const res = await authFetch(`/api/admin/pricing/${item.id}`, {
+        method: 'PUT',
+        body: JSON.stringify({ popular: newPopular }),
+      })
+      if (res.success && res.data) {
+        setPricingItems(pricingItems.map((p) => (p.id === item.id ? res.data : p)))
+        setAlertMsg({
+          type: 'success',
+          text: `Rate card ${newPopular ? 'marked Most Requested' : 'unmarked Most Requested'}`,
+        })
+      }
+    } catch (err: any) {
+      setAlertMsg({ type: 'error', text: err.message || 'Toggle failed' })
+    }
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
@@ -607,6 +802,7 @@ export default function AdminDashboardPage() {
         <div className="p-1 sm:p-1.5 bg-slate-200/70 backdrop-blur-md rounded-2xl flex overflow-x-auto gap-1 sm:gap-1.5 mb-5 sm:mb-8 scrollbar-none border border-black/[0.04]">
           {[
             { id: 'cms', label: 'Website Content', shortLabel: 'CMS', icon: LayoutTemplate, count: siteContent.length },
+            { id: 'pricing', label: 'Rate Cards & Pricing', shortLabel: 'Pricing', icon: BadgePercent, count: pricingItems.length },
             { id: 'inquiries', label: 'Customer Messages', shortLabel: 'Messages', icon: Inbox, count: inquiries.length },
             { id: 'services', label: 'Services Directory', shortLabel: 'Services', icon: Wrench, count: services.length },
             { id: 'photos', label: 'Work Photos', shortLabel: 'Photos', icon: Camera, count: photos.length },
@@ -942,6 +1138,444 @@ export default function AdminDashboardPage() {
                 </div>
               </div>
             </div>
+          </div>
+        )}
+
+        {/* ── TAB: PRICING & RATE CARDS ── */}
+        {activeTab === 'pricing' && (
+          <div className="space-y-4 sm:space-y-6">
+            {/* Header & Controls Card */}
+            <div className="bg-white p-4 sm:p-7 rounded-2xl sm:rounded-3xl border border-black/[0.06] shadow-apple space-y-4 sm:space-y-5">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-red-50 text-red-600 flex items-center justify-center shrink-0 border border-red-100">
+                    <BadgePercent className="w-4 h-4 sm:w-5 sm:h-5" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h2 className="text-base sm:text-xl font-bold text-slate-900">Repair Rates &amp; Pricing</h2>
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-slate-100 text-slate-700 border border-slate-200">
+                        {pricingItems.length} Total
+                      </span>
+                    </div>
+                    <p className="text-[11px] sm:text-xs text-slate-500 mt-0.5">
+                      Live rate cards displayed on the website /pricing page. Add, edit, or remove anytime.
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  onClick={handleOpenAddPricingModal}
+                  className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-red-600 text-white text-xs sm:text-sm font-bold shadow-sm transition-all active:scale-95 shrink-0"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Add Rate Card</span>
+                </button>
+              </div>
+
+              {/* Category Pills & Search */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 no-scrollbar">
+                  {[
+                    { id: 'ALL', label: 'All Rates' },
+                    { id: 'tv', label: 'LED TV' },
+                    { id: 'refrigerator', label: 'Refrigerator' },
+                    { id: 'washing-machine', label: 'Washing Machine' },
+                    { id: 'ac', label: 'AC' },
+                    { id: 'others', label: 'Microwave & Others' },
+                  ].map((filter) => {
+                    const count =
+                      filter.id === 'ALL'
+                        ? pricingItems.length
+                        : pricingItems.filter((p) => p.categoryId === filter.id).length
+                    const isActive = pricingFilter === filter.id
+                    return (
+                      <button
+                        key={filter.id}
+                        onClick={() => setPricingFilter(filter.id)}
+                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
+                          isActive
+                            ? 'bg-slate-900 text-white shadow-sm'
+                            : 'bg-slate-100 text-slate-600 hover:bg-slate-200/70 hover:text-slate-900'
+                        }`}
+                      >
+                        <span>{filter.label}</span>
+                        <span
+                          className={`px-1.5 py-0.2 rounded-full text-[10px] ${
+                            isActive ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-700'
+                          }`}
+                        >
+                          {count}
+                        </span>
+                      </button>
+                    )
+                  })}
+                </div>
+
+                <div className="relative w-full sm:w-64 shrink-0">
+                  <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="text"
+                    placeholder="Search price cards..."
+                    value={pricingSearch}
+                    onChange={(e) => setPricingSearch(e.target.value)}
+                    className="w-full pl-8 pr-3 py-1.5 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-red-600 text-slate-800 bg-slate-50 focus:bg-white"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Pricing Cards Grid */}
+            {pricingItems
+              .filter((p) => pricingFilter === 'ALL' || p.categoryId === pricingFilter)
+              .filter((p) => {
+                if (!pricingSearch.trim()) return true
+                const query = pricingSearch.toLowerCase()
+                return (
+                  p.name?.toLowerCase().includes(query) ||
+                  p.priceRange?.toLowerCase().includes(query) ||
+                  p.category?.toLowerCase().includes(query) ||
+                  p.description?.toLowerCase().includes(query)
+                )
+              }).length === 0 ? (
+              <div className="bg-white rounded-2xl sm:rounded-3xl border border-black/[0.06] shadow-apple p-8 sm:p-12 text-center text-slate-400 space-y-2.5">
+                <BadgePercent className="w-10 h-10 mx-auto text-slate-300" />
+                <h3 className="text-sm sm:text-base font-bold text-slate-700">No rate cards found</h3>
+                <p className="text-[11px] sm:text-xs text-slate-500 max-w-sm mx-auto">
+                  Try adjusting your category filter or click &apos;Add Rate Card&apos; to create a new price item.
+                </p>
+                <button
+                  onClick={handleOpenAddPricingModal}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 transition-all"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Create First Rate Card</span>
+                </button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                {pricingItems
+                  .filter((p) => pricingFilter === 'ALL' || p.categoryId === pricingFilter)
+                  .filter((p) => {
+                    if (!pricingSearch.trim()) return true
+                    const query = pricingSearch.toLowerCase()
+                    return (
+                      p.name?.toLowerCase().includes(query) ||
+                      p.priceRange?.toLowerCase().includes(query) ||
+                      p.category?.toLowerCase().includes(query) ||
+                      p.description?.toLowerCase().includes(query)
+                    )
+                  })
+                  .map((item) => {
+                    let feats: string[] = []
+                    if (Array.isArray(item.features)) {
+                      feats = item.features
+                    } else if (typeof item.features === 'string') {
+                      try {
+                        const parsed = JSON.parse(item.features)
+                        feats = Array.isArray(parsed) ? parsed : [item.features]
+                      } catch {
+                        feats = item.features.split('\n').map((s: string) => s.trim()).filter(Boolean)
+                      }
+                    }
+
+                    return (
+                      <div
+                        key={item.id}
+                        className={`bg-white rounded-2xl sm:rounded-3xl border transition-all duration-200 flex flex-col justify-between p-4 sm:p-6 relative ${
+                          item.popular
+                            ? 'border-red-400 shadow-md shadow-red-500/5'
+                            : 'border-black/[0.06] shadow-apple hover:shadow-apple-hover'
+                        }`}
+                      >
+                        <div>
+                          {/* Card Meta Row */}
+                          <div className="flex flex-wrap items-center justify-between gap-1.5 mb-3">
+                            <div className="flex items-center gap-1.5">
+                              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-200/80">
+                                {item.category || item.categoryId}
+                              </span>
+                              {item.popular && (
+                                <span className="px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase tracking-wider bg-red-600 text-white shadow-xs">
+                                  ★ Most Requested
+                                </span>
+                              )}
+                            </div>
+
+                            <button
+                              onClick={() => handleTogglePricingActive(item)}
+                              className={`px-2 py-0.5 rounded-full text-[10px] font-bold transition-colors ${
+                                item.active
+                                  ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100'
+                                  : 'bg-slate-100 text-slate-400 border border-slate-200 hover:bg-slate-200'
+                              }`}
+                              title="Click to toggle active status"
+                            >
+                              {item.active ? 'Live' : 'Hidden'}
+                            </button>
+                          </div>
+
+                          {/* Service Name */}
+                          <h3 className="text-sm sm:text-base font-extrabold text-slate-900 leading-snug mb-2">
+                            {item.name}
+                          </h3>
+
+                          {/* Price & Turnaround Row */}
+                          <div className="flex items-center justify-between gap-2 mb-3 p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+                            <div>
+                              <span className="text-base sm:text-lg font-black text-emerald-700 tracking-tight">
+                                {item.priceRange}
+                              </span>
+                              <span className="text-[10px] text-slate-500 block">estimated rate</span>
+                            </div>
+                            <div className="flex items-center gap-1 text-[11px] font-semibold text-slate-600 bg-white px-2 py-1 rounded-lg border border-slate-200/70 shrink-0">
+                              <Clock className="w-3 h-3 text-red-500" />
+                              <span>{item.serviceTime || 'Same Day'}</span>
+                            </div>
+                          </div>
+
+                          {/* Description */}
+                          {item.description && (
+                            <p className="text-xs text-slate-600 leading-relaxed mb-3 line-clamp-2">
+                              {item.description}
+                            </p>
+                          )}
+
+                          {/* Features */}
+                          {feats.length > 0 && (
+                            <div className="space-y-1.5 pt-2 pb-3 border-t border-slate-100">
+                              {feats.slice(0, 3).map((f, fIdx) => (
+                                <div key={fIdx} className="flex items-center gap-1.5 text-[11px] text-slate-600">
+                                  <CheckCircle2 className="w-3 h-3 text-emerald-600 shrink-0" />
+                                  <span className="truncate">{f}</span>
+                                </div>
+                              ))}
+                              {feats.length > 3 && (
+                                <p className="text-[10px] text-slate-400 font-semibold pl-4">
+                                  +{feats.length - 3} more benefits
+                                </p>
+                              )}
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+                          <button
+                            onClick={() => handleOpenEditPricingModal(item)}
+                            className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200/80 text-slate-800 text-xs font-bold transition-all active:scale-95"
+                          >
+                            <Edit2 className="w-3.5 h-3.5 text-slate-500" />
+                            <span>Edit Rate</span>
+                          </button>
+
+                          <button
+                            onClick={() => handleTogglePricingPopular(item)}
+                            className={`p-2 rounded-xl border transition-all ${
+                              item.popular
+                                ? 'bg-amber-50 border-amber-200 text-amber-600 hover:bg-amber-100'
+                                : 'bg-white border-slate-200 text-slate-400 hover:text-amber-600 hover:bg-amber-50'
+                            }`}
+                            title={item.popular ? 'Unmark Most Requested' : 'Mark as Most Requested'}
+                          >
+                            <Star className={`w-3.5 h-3.5 ${item.popular ? 'fill-current' : ''}`} />
+                          </button>
+
+                          <button
+                            onClick={() => handleDeletePricing(item.id, item.name)}
+                            disabled={deletingPricingId === item.id}
+                            className="p-2 rounded-xl text-red-600 hover:bg-red-50 active:scale-95 transition-all disabled:opacity-50"
+                            title="Delete Rate Card"
+                          >
+                            {deletingPricingId === item.id ? (
+                              <div className="w-3.5 h-3.5 border-2 border-red-600/30 border-t-red-600 rounded-full animate-spin" />
+                            ) : (
+                              <Trash2 className="w-3.5 h-3.5" />
+                            )}
+                          </button>
+                        </div>
+                      </div>
+                    )
+                  })}
+              </div>
+            )}
+
+            {/* ── Apple UI Modal: Add / Edit Rate Card ── */}
+            {isPricingModalOpen && (
+              <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-md overflow-y-auto flex items-center justify-center p-3 sm:p-4 animate-fade-in">
+                <div className="bg-white rounded-2xl sm:rounded-3xl border border-black/[0.08] shadow-apple-modal max-w-lg w-full p-4 sm:p-6 space-y-4 relative my-auto max-h-[92vh] overflow-y-auto">
+                  <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-red-50 text-red-600 flex items-center justify-center shrink-0">
+                        <BadgePercent className="w-4 h-4 sm:w-5 sm:h-5" />
+                      </div>
+                      <div>
+                        <h3 className="text-sm sm:text-base font-bold text-slate-900">
+                          {editingPricingItem ? 'Edit Service Rate Card' : 'Add New Rate Card'}
+                        </h3>
+                        <p className="text-[10px] sm:text-xs text-slate-500">
+                          Live pricing item shown in Kanpur doorstep rate matrix.
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => setIsPricingModalOpen(false)}
+                      className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-slate-100 text-slate-500 hover:text-slate-800 flex items-center justify-center transition-colors"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+
+                  <form onSubmit={handleSavePricing} className="space-y-3.5">
+                    {/* Category Selection */}
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1">
+                        Service Category *
+                      </label>
+                      <select
+                        value={priceCategoryId}
+                        onChange={(e) => {
+                          const val = e.target.value
+                          setPriceCategoryId(val)
+                          setPriceCategory(categoryNamesMap[val] || val)
+                        }}
+                        className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs bg-white focus:outline-none focus:border-red-600 text-slate-800 font-medium"
+                      >
+                        <option value="tv">LED / Smart TV</option>
+                        <option value="refrigerator">Refrigerator</option>
+                        <option value="washing-machine">Washing Machine</option>
+                        <option value="ac">Air Conditioner (AC)</option>
+                        <option value="others">Microwave &amp; Other Appliances</option>
+                      </select>
+                    </div>
+
+                    {/* Service Name */}
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1">
+                        Service / Repair Name *
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={priceName}
+                        onChange={(e) => setPriceName(e.target.value)}
+                        placeholder="e.g. LED Backlight Array Replacement"
+                        className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-red-600 text-slate-800 font-medium"
+                      />
+                    </div>
+
+                    {/* Price Range & Service Time in a 2-col row */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">
+                          Price Range / Fee *
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          value={priceRange}
+                          onChange={(e) => setPriceRange(e.target.value)}
+                          placeholder="e.g. ₹899 – ₹1,899 or ₹299"
+                          className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-red-600 text-slate-800 font-medium"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">
+                          Estimated Service Time
+                        </label>
+                        <input
+                          type="text"
+                          value={priceServiceTime}
+                          onChange={(e) => setPriceServiceTime(e.target.value)}
+                          placeholder="e.g. Same Day, 45–60 Mins, 24–48 Hrs"
+                          className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-red-600 text-slate-800 font-medium"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Description */}
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1">
+                        Problem / Work Description
+                      </label>
+                      <textarea
+                        rows={2}
+                        value={priceDescription}
+                        onChange={(e) => setPriceDescription(e.target.value)}
+                        placeholder="Fixes dark screen, sound working but no display, flickering or dim patches on display..."
+                        className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-red-600 resize-none text-slate-800 leading-relaxed font-medium"
+                      />
+                    </div>
+
+                    {/* Features (One per line) */}
+                    <div>
+                      <div className="flex items-center justify-between mb-1">
+                        <label className="block text-xs font-bold text-slate-700">
+                          Included Features / Benefits
+                        </label>
+                        <span className="text-[10px] text-slate-400">One bullet point per line</span>
+                      </div>
+                      <textarea
+                        rows={3}
+                        value={priceFeatures}
+                        onChange={(e) => setPriceFeatures(e.target.value)}
+                        placeholder="Full genuine LED strip set&#10;Even brightness calibration&#10;90-day parts warranty"
+                        className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:border-red-600 resize-none text-slate-800 leading-relaxed font-mono"
+                      />
+                    </div>
+
+                    {/* Toggles: Popular & Active */}
+                    <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/70 space-y-2">
+                      <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-slate-700">
+                        <input
+                          type="checkbox"
+                          checked={pricePopular}
+                          onChange={(e) => setPricePopular(e.target.checked)}
+                          className="w-4 h-4 rounded text-red-600 focus:ring-red-500 border-slate-300"
+                        />
+                        <span>Mark as &quot;Most Requested&quot; highlight badge</span>
+                      </label>
+
+                      <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-slate-700">
+                        <input
+                          type="checkbox"
+                          checked={priceActive}
+                          onChange={(e) => setPriceActive(e.target.checked)}
+                          className="w-4 h-4 rounded text-red-600 focus:ring-red-500 border-slate-300"
+                        />
+                        <span>Active and visible on live website</span>
+                      </label>
+                    </div>
+
+                    {/* Submit Buttons */}
+                    <div className="pt-2.5 flex items-center justify-end gap-2.5 border-t border-slate-100">
+                      <button
+                        type="button"
+                        onClick={() => setIsPricingModalOpen(false)}
+                        className="px-3.5 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition-all"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="submit"
+                        disabled={savingPricing}
+                        className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white bg-red-600 hover:bg-red-700 active:scale-95 transition-all disabled:opacity-50 shadow-sm"
+                      >
+                        {savingPricing ? (
+                          <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        ) : (
+                          <>
+                            <Save className="w-3.5 h-3.5" />
+                            <span>{editingPricingItem ? 'Save Changes' : 'Create Rate Card'}</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            )}
           </div>
         )}
 

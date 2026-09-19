@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   Tv,
   Refrigerator,
@@ -18,6 +18,7 @@ import {
 } from 'lucide-react'
 import { SITE_CONFIG, getDialerUrl, getWhatsAppUrl } from '@/lib/site'
 import { useBusinessContact } from '@/context/ContactContext'
+import { ScrollReveal } from '@/components/ScrollReveal'
 
 interface PriceItem {
   name: string
@@ -255,16 +256,86 @@ const PRICING_DATA: ServiceCategoryPricing[] = [
 interface PricingSectionProps {
   showHeader?: boolean
   className?: string
+  initialItems?: any[]
 }
 
-export function PricingSection({ showHeader = true, className = '' }: PricingSectionProps) {
+export function PricingSection({ showHeader = true, className = '', initialItems = [] }: PricingSectionProps) {
   const [activeTab, setActiveTab] = useState<string>('tv')
+  const [dbItems, setDbItems] = useState<any[]>(initialItems)
   const liveContact = useBusinessContact()
   const activePhone = liveContact.phone || SITE_CONFIG.phone
   const activeSecondary = liveContact.secondaryPhone || SITE_CONFIG.secondaryPhone
   const activeWhatsapp = liveContact.whatsapp || SITE_CONFIG.whatsapp
 
-  const currentCategory = PRICING_DATA.find((c) => c.id === activeTab) || PRICING_DATA[0]
+  useEffect(() => {
+    fetch('/api/pricing')
+      .then((res) => res.json())
+      .then((json) => {
+        if (json?.success && Array.isArray(json.data) && json.data.length > 0) {
+          setDbItems(json.data)
+        }
+      })
+      .catch(() => {})
+  }, [])
+
+  // Parse features helper
+  const parseFeatures = (features: any): string[] => {
+    if (Array.isArray(features)) return features
+    if (typeof features === 'string') {
+      try {
+        const parsed = JSON.parse(features)
+        if (Array.isArray(parsed)) return parsed
+      } catch {}
+      return features.split('\n').map((s) => s.trim()).filter(Boolean)
+    }
+    return []
+  }
+
+  // Combine or build dynamic categories from DB items
+  const dynamicCategories: ServiceCategoryPricing[] = PRICING_DATA.map((baseCat) => {
+    const matchingDbItems = dbItems.filter((i) => i.categoryId === baseCat.id)
+    if (matchingDbItems.length > 0) {
+      return {
+        ...baseCat,
+        items: matchingDbItems.map((item) => ({
+          name: item.name,
+          range: item.priceRange || item.range,
+          time: item.serviceTime || item.time || 'Same Day',
+          popular: Boolean(item.popular),
+          description: item.description,
+          features: parseFeatures(item.features),
+        })),
+      }
+    }
+    return baseCat
+  })
+
+  // Add any extra custom categories created by admin if any
+  const existingCategoryIds = new Set(PRICING_DATA.map((c) => c.id))
+  const extraCategoryIds = Array.from(new Set(dbItems.map((i) => i.categoryId))).filter(
+    (id) => !existingCategoryIds.has(id)
+  )
+  for (const extraId of extraCategoryIds) {
+    const catItems = dbItems.filter((i) => i.categoryId === extraId)
+    if (catItems.length > 0) {
+      dynamicCategories.push({
+        id: extraId,
+        category: catItems[0].category || extraId,
+        icon: Wrench,
+        tagline: `Professional repair and maintenance in Kanpur`,
+        items: catItems.map((item) => ({
+          name: item.name,
+          range: item.priceRange,
+          time: item.serviceTime || 'Same Day',
+          popular: Boolean(item.popular),
+          description: item.description,
+          features: parseFeatures(item.features),
+        })),
+      })
+    }
+  }
+
+  const currentCategory = dynamicCategories.find((c) => c.id === activeTab) || dynamicCategories[0] || PRICING_DATA[0]
 
   return (
     <section id="pricing" className={`${showHeader ? 'py-16 sm:py-24 bg-white border-b border-slate-100' : 'py-8 sm:py-12 bg-white'} scroll-mt-20 ${className}`}>
@@ -332,7 +403,7 @@ export function PricingSection({ showHeader = true, className = '' }: PricingSec
 
         {/* Category Filter Tabs */}
         <div className="flex items-center justify-start sm:justify-center gap-2 overflow-x-auto pb-4 mb-8 no-scrollbar">
-          {PRICING_DATA.map((cat) => {
+          {dynamicCategories.map((cat) => {
             const Icon = cat.icon
             const isActive = activeTab === cat.id
             return (
@@ -369,69 +440,70 @@ export function PricingSection({ showHeader = true, className = '' }: PricingSec
         {/* Pricing Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {currentCategory.items.map((item, idx) => (
-            <div
-              key={idx}
-              className={`relative rounded-3xl p-6 sm:p-7 flex flex-col justify-between transition-all duration-200 ${
-                item.popular
-                  ? 'bg-white border-2 border-red-500 shadow-xl shadow-red-500/5'
-                  : 'bg-white border border-slate-200/90 shadow-sm hover:shadow-md hover:border-slate-300'
-              }`}
-            >
-              {item.popular && (
-                <div className="absolute -top-3 right-6 px-3 py-1 rounded-full bg-red-600 text-white text-[11px] font-extrabold uppercase tracking-wider shadow-sm">
-                  Most Requested
+            <ScrollReveal key={idx} animation="fade-up" delay={idx * 50}>
+              <div
+                className={`h-full relative rounded-3xl p-6 sm:p-7 flex flex-col justify-between transition-all duration-200 ${
+                  item.popular
+                    ? 'bg-white border-2 border-red-500 shadow-xl shadow-red-500/5'
+                    : 'bg-white border border-slate-200/90 shadow-sm hover:shadow-md hover:border-slate-300'
+                }`}
+              >
+                {item.popular && (
+                  <div className="absolute -top-3 right-6 px-3 py-1 rounded-full bg-red-600 text-white text-[11px] font-extrabold uppercase tracking-wider shadow-sm">
+                    Most Requested
+                  </div>
+                )}
+
+                <div>
+                  <div className="flex items-start justify-between gap-4 mb-3">
+                    <h3 className="text-lg font-bold text-slate-900 leading-snug">{item.name}</h3>
+                  </div>
+
+                  <div className="flex items-baseline gap-2 mb-3">
+                    <span className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+                      {item.range}
+                    </span>
+                    <span className="text-xs font-semibold text-slate-500">estimated cost</span>
+                  </div>
+
+                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mb-4">
+                    {item.description}
+                  </p>
+
+                  <div className="space-y-2 pt-2 pb-5 border-t border-slate-100">
+                    {item.features.map((feat, fIdx) => (
+                      <div key={fIdx} className="flex items-center gap-2 text-xs text-slate-700">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                        <span>{feat}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              )}
 
-              <div>
-                <div className="flex items-start justify-between gap-4 mb-3">
-                  <h3 className="text-lg font-bold text-slate-900 leading-snug">{item.name}</h3>
-                </div>
+                {/* Card Action Buttons */}
+                <div className="pt-4 border-t border-slate-100 flex items-center gap-2">
+                  <a
+                    href={getWhatsAppUrl(
+                      `Hello STAR DIGITAL, I am inquiring about pricing for: ${item.name} (${item.range}). Please share technician availability in Kanpur.`
+                    )}
+                    className="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-[#25D366] text-white text-xs font-bold hover:bg-[#20bd5a] transition-all shadow-sm"
+                    aria-label={`Inquire about ${item.name} on WhatsApp`}
+                  >
+                    <MessageSquare className="w-3.5 h-3.5 fill-current" />
+                    <span>WhatsApp</span>
+                  </a>
 
-                <div className="flex items-baseline gap-2 mb-3">
-                  <span className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-                    {item.range}
-                  </span>
-                  <span className="text-xs font-semibold text-slate-500">estimated cost</span>
-                </div>
-
-                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mb-4">
-                  {item.description}
-                </p>
-
-                <div className="space-y-2 pt-2 pb-5 border-t border-slate-100">
-                  {item.features.map((feat, fIdx) => (
-                    <div key={fIdx} className="flex items-center gap-2 text-xs text-slate-700">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                      <span>{feat}</span>
-                    </div>
-                  ))}
+                  <a
+                    href={getDialerUrl(activePhone)}
+                    className="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-slate-900 text-white text-xs font-bold hover:bg-red-600 transition-all shadow-sm"
+                    aria-label={`Call technician for ${item.name}`}
+                  >
+                    <Phone className="w-3.5 h-3.5 fill-current" />
+                    <span>Call Now</span>
+                  </a>
                 </div>
               </div>
-
-              {/* Card Action Buttons */}
-              <div className="pt-4 border-t border-slate-100 flex items-center gap-2">
-                <a
-                  href={getWhatsAppUrl(
-                    `Hello STAR DIGITAL, I am inquiring about pricing for: ${item.name} (${item.range}). Please share technician availability in Kanpur.`
-                  )}
-                  className="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-[#25D366] text-white text-xs font-bold hover:bg-[#20bd5a] transition-all shadow-sm"
-                  aria-label={`Inquire about ${item.name} on WhatsApp`}
-                >
-                  <MessageSquare className="w-3.5 h-3.5 fill-current" />
-                  <span>WhatsApp</span>
-                </a>
-
-                <a
-                  href={getDialerUrl(activePhone)}
-                  className="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-slate-900 text-white text-xs font-bold hover:bg-red-600 transition-all shadow-sm"
-                  aria-label={`Call technician for ${item.name}`}
-                >
-                  <Phone className="w-3.5 h-3.5 fill-current" />
-                  <span>Call Now</span>
-                </a>
-              </div>
-            </div>
+            </ScrollReveal>
           ))}
         </div>
 

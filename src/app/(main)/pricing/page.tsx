@@ -3,6 +3,7 @@ import { BadgePercent, HelpCircle, Phone, MessageSquare, CheckCircle2, ShieldChe
 import { PricingSection } from '@/sections/PricingSection'
 import { SITE_CONFIG, getDialerUrl, getWhatsAppUrl } from '@/lib/site'
 import { getLiveContact } from '@/lib/contact'
+import { prisma } from '@/lib/prisma'
 
 export const metadata = {
   title: 'Pricing & Service Rates | STAR DIGITAL Kanpur Appliance Care',
@@ -11,7 +12,15 @@ export const metadata = {
 }
 
 export default async function PricingPage() {
-  const contact = await getLiveContact()
+  const [contact, pricingItems] = await Promise.all([
+    getLiveContact(),
+    prisma.pricingItem
+      .findMany({
+        where: { active: true },
+        orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }],
+      })
+      .catch(() => []),
+  ])
   const faqs = [
     {
       q: 'How does the ₹299 doorstep inspection fee work?',
@@ -61,7 +70,7 @@ export default async function PricingPage() {
 
         {/* Embedded Interactive Pricing Matrix */}
         <div className="bg-white rounded-3xl border border-slate-200/80 shadow-sm overflow-hidden mb-16">
-          <PricingSection showHeader={false} />
+          <PricingSection showHeader={false} initialItems={pricingItems} />
         </div>
 
         {/* Pricing FAQs Section */}
