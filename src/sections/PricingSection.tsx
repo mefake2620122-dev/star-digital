@@ -17,6 +17,7 @@ import {
   BadgePercent
 } from 'lucide-react'
 import { SITE_CONFIG, getDialerUrl, getWhatsAppUrl } from '@/lib/site'
+import { useBusinessContact } from '@/context/ContactContext'
 
 interface PriceItem {
   name: string
@@ -258,6 +259,10 @@ interface PricingSectionProps {
 
 export function PricingSection({ showHeader = true, className = '' }: PricingSectionProps) {
   const [activeTab, setActiveTab] = useState<string>('tv')
+  const liveContact = useBusinessContact()
+  const activePhone = liveContact.phone || SITE_CONFIG.phone
+  const activeSecondary = liveContact.secondaryPhone || SITE_CONFIG.secondaryPhone
+  const activeWhatsapp = liveContact.whatsapp || SITE_CONFIG.whatsapp
 
   const currentCategory = PRICING_DATA.find((c) => c.id === activeTab) || PRICING_DATA[0]
 
@@ -418,7 +423,7 @@ export function PricingSection({ showHeader = true, className = '' }: PricingSec
                 </a>
 
                 <a
-                  href={getDialerUrl(SITE_CONFIG.phone)}
+                  href={getDialerUrl(activePhone)}
                   className="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-slate-900 text-white text-xs font-bold hover:bg-red-600 transition-all shadow-sm"
                   aria-label={`Call technician for ${item.name}`}
                 >
@@ -463,17 +468,17 @@ export function PricingSection({ showHeader = true, className = '' }: PricingSec
               </p>
               <p className="text-xs text-slate-500">
                 Speak directly with Star Digital’s technical manager at{' '}
-                <span className="font-bold text-slate-800">{SITE_CONFIG.phone}</span> /{' '}
-                <span className="font-bold text-slate-800">{SITE_CONFIG.secondaryPhone}</span>
+                <span className="font-bold text-slate-800">{activePhone}</span> /{' '}
+                <span className="font-bold text-slate-800">{activeSecondary}</span>
               </p>
             </div>
             <div className="flex items-center gap-3">
               <a
-                href={getDialerUrl(SITE_CONFIG.phone)}
+                href={getDialerUrl(activePhone)}
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-red-600 text-white text-xs font-bold hover:bg-red-700 transition-colors shadow-sm"
               >
                 <Phone className="w-3.5 h-3.5 fill-current" />
-                <span>Call {SITE_CONFIG.phone}</span>
+                <span>Call {activePhone}</span>
               </a>
             </div>
           </div>

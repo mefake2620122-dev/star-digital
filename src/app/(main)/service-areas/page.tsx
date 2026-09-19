@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { MapPin, Search, Clock, MessageSquare, Phone } from 'lucide-react'
 import { SITE_CONFIG, getDialerUrl, getWhatsAppUrl } from '@/lib/site'
+import { useBusinessContact } from '@/context/ContactContext'
 
 interface ServiceArea {
   id: string
@@ -15,6 +16,8 @@ interface ServiceArea {
 }
 
 export default function ServiceAreasPage() {
+  const liveContact = useBusinessContact()
+  const activePhone = liveContact.phone || SITE_CONFIG.phone
   const [areas, setAreas] = useState<ServiceArea[]>([])
   const [searchTerm, setSearchTerm] = useState('')
   const [loading, setLoading] = useState(true)
@@ -113,7 +116,7 @@ export default function ServiceAreasPage() {
 
                 <div className="mt-5 pt-3 border-t border-slate-100 flex items-center justify-between">
                   <a
-                    href={getDialerUrl(SITE_CONFIG.phone)}
+                    href={getDialerUrl(activePhone)}
                     className="text-xs font-semibold text-slate-600 hover:text-red-600 inline-flex items-center gap-1.5"
                   >
                     <Phone className="w-3.5 h-3.5" />
@@ -141,10 +144,10 @@ export default function ServiceAreasPage() {
             </p>
             <div className="pt-2">
               <a
-                href={getDialerUrl(SITE_CONFIG.phone)}
+                href={getDialerUrl(activePhone)}
                 className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-red-600 text-white text-xs font-bold shadow-sm"
               >
-                Call Helpline: {SITE_CONFIG.phone}
+                Call Helpline: {activePhone}
               </a>
             </div>
           </div>

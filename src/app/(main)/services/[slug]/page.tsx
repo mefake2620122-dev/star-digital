@@ -11,6 +11,7 @@ import {
   ChevronDown,
 } from 'lucide-react'
 import { SITE_CONFIG, getDialerUrl, getWhatsAppUrl, generateServiceMsg } from '@/lib/site'
+import { getLiveContact } from '@/lib/contact'
 
 interface Props {
   params: { slug: string }
@@ -26,10 +27,13 @@ export async function generateMetadata({ params }: Props) {
 }
 
 export default async function ServiceDetailPage({ params }: Props) {
-  const service = await prisma.service.findUnique({
-    where: { slug: params.slug },
-    include: { categories: true, issues: true, faqs: true },
-  })
+  const [service, contact] = await Promise.all([
+    prisma.service.findUnique({
+      where: { slug: params.slug },
+      include: { categories: true, issues: true, faqs: true },
+    }),
+    getLiveContact(),
+  ])
 
   if (!service) notFound()
 
@@ -73,7 +77,7 @@ export default async function ServiceDetailPage({ params }: Props) {
               </a>
 
               <a
-                href={getDialerUrl(SITE_CONFIG.phone)}
+                href={getDialerUrl(contact.phone)}
                 className="inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-white border border-slate-200 text-slate-900 font-bold text-sm hover:bg-slate-50 active:scale-95 transition-all shadow-sm"
               >
                 <Phone className="w-4 h-4 fill-current text-red-600" />

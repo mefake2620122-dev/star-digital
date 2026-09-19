@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { prisma } from '@/lib/prisma'
 import { ArrowRight, CheckCircle2, MessageSquare, Phone } from 'lucide-react'
 import { SITE_CONFIG, getWhatsAppUrl, getDialerUrl } from '@/lib/site'
+import { getLiveContact } from '@/lib/contact'
 
 export const metadata = {
   title: 'Appliance Repair Services in Kanpur | STAR DIGITAL',
@@ -22,7 +23,10 @@ async function getServices() {
 }
 
 export default async function ServicesPage() {
-  const services = await getServices()
+  const [services, contact] = await Promise.all([
+    getServices(),
+    getLiveContact(),
+  ])
 
   return (
     <div className="py-10 sm:py-16 bg-slate-50 min-h-screen">
@@ -140,7 +144,7 @@ export default async function ServicesPage() {
           </div>
           <div className="flex gap-3">
             <a
-              href={getDialerUrl(SITE_CONFIG.phone)}
+              href={getDialerUrl(contact.phone)}
               className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-red-600 hover:bg-red-700 text-white text-sm font-bold shadow-md transition-all active:scale-95"
             >
               <Phone className="w-4 h-4 fill-current" />

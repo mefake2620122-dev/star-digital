@@ -1,13 +1,15 @@
 import Link from 'next/link'
 import { ShieldCheck, Wrench, Clock, Users, MessageSquare, Phone } from 'lucide-react'
 import { SITE_CONFIG, getDialerUrl, getWhatsAppUrl } from '@/lib/site'
+import { getLiveContact } from '@/lib/contact'
 
 export const metadata = {
   title: 'About Us | STAR DIGITAL Kanpur Appliance Care',
   description: 'Learn about STAR DIGITAL: Certified doorstep appliance repair and installation specialists operating from Maqbara Gwaltoli, Near Elgin Mill, Civil Lines, Kanpur since 2014.',
 }
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const contact = await getLiveContact()
   return (
     <div className="py-10 sm:py-16 bg-slate-50 min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -152,7 +154,7 @@ export default function AboutPage() {
               <span>WhatsApp Us</span>
             </a>
             <a
-              href={getDialerUrl(SITE_CONFIG.phone)}
+              href={getDialerUrl(contact.phone)}
               className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-red-600 hover:bg-red-700 text-white font-bold text-sm shadow-md transition-all active:scale-[0.98]"
             >
               <Phone className="w-4 h-4 fill-current" />

@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { BadgePercent, HelpCircle, Phone, MessageSquare, CheckCircle2, ShieldCheck, Clock, Sparkles } from 'lucide-react'
 import { PricingSection } from '@/sections/PricingSection'
 import { SITE_CONFIG, getDialerUrl, getWhatsAppUrl } from '@/lib/site'
+import { getLiveContact } from '@/lib/contact'
 
 export const metadata = {
   title: 'Pricing & Service Rates | STAR DIGITAL Kanpur Appliance Care',
@@ -9,7 +10,8 @@ export const metadata = {
     'Transparent, honest doorstep repair rates in Kanpur for LED/LCD TV, AC, Refrigerator, and Washing Machine. Diagnostic inspection fee 100% adjusted into final repair bill.',
 }
 
-export default function PricingPage() {
+export default async function PricingPage() {
+  const contact = await getLiveContact()
   const faqs = [
     {
       q: 'How does the ₹299 doorstep inspection fee work?',
@@ -112,11 +114,11 @@ export default function PricingPage() {
               <span>WhatsApp Us</span>
             </a>
             <a
-              href={getDialerUrl(SITE_CONFIG.phone)}
+              href={getDialerUrl(contact.phone)}
               className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-red-600 text-white text-sm font-bold hover:bg-red-700 transition-all shadow-sm"
             >
               <Phone className="w-4 h-4 fill-current" />
-              <span>Call: {SITE_CONFIG.phone}</span>
+              <span>Call: {contact.phone}</span>
             </a>
           </div>
         </div>

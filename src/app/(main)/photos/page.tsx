@@ -3,6 +3,7 @@ import { Camera, MapPin, ShieldCheck, Sparkles, MessageSquare, Phone } from 'luc
 import { prisma } from '@/lib/prisma'
 import { PhotosGalleryClient } from '@/components/PhotosGalleryClient'
 import { SITE_CONFIG, getDialerUrl, getWhatsAppUrl } from '@/lib/site'
+import { getLiveContact } from '@/lib/contact'
 
 export const metadata = {
   title: 'Work Photos & Service Gallery | STAR DIGITAL Kanpur Appliance Care',
@@ -23,7 +24,10 @@ async function getPhotos() {
 }
 
 export default async function PhotosPage() {
-  const photos = await getPhotos()
+  const [photos, contact] = await Promise.all([
+    getPhotos(),
+    getLiveContact(),
+  ])
 
   return (
     <div className="py-10 sm:py-16 bg-slate-50 min-h-screen">
@@ -114,11 +118,11 @@ export default async function PhotosPage() {
               <span>Share on WhatsApp</span>
             </a>
             <a
-              href={getDialerUrl(SITE_CONFIG.phone)}
+              href={getDialerUrl(contact.phone)}
               className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-red-600 text-white text-sm font-bold hover:bg-red-700 transition-all shadow-sm"
             >
               <Phone className="w-4 h-4 fill-current" />
-              <span>Call: {SITE_CONFIG.phone}</span>
+              <span>Call: {contact.phone}</span>
             </a>
           </div>
         </div>

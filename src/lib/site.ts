@@ -60,11 +60,11 @@ export function getWhatsAppUrl(message?: string, phone?: string): string {
 // ── Tel Dialer Link ────────────────────────────────────────────────────────────
 // NEVER use target="_blank" with tel: — it breaks iOS/Android native dialer
 function normalizeDialerNumber(phone?: string): string {
-  const raw = (phone || SITE_CONFIG.phone).replace(/[^0-9+]/g, '')
-  if (raw.startsWith('+')) return '+' + raw.replace(/[^0-9]/g, '')
+  const raw = (phone || SITE_CONFIG.phone).trim()
   const digits = raw.replace(/[^0-9]/g, '')
-  if (digits.length === 10) return '+91' + digits
-  if (digits.length === 12 && digits.startsWith('91')) return '+' + digits
+  if (digits.length >= 10) {
+    return '+91' + digits.slice(-10)
+  }
   return '+91' + digits
 }
 
