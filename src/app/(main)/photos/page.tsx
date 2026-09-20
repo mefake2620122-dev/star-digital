@@ -10,6 +10,8 @@ export const metadata = {
   description:
     'Real workshop and doorstep repair photos from Star Digital in Kanpur. High-resolution photos of LED TV panel repair, AC chemical servicing, refrigerator cooling fixes, and washing machine rebuilds.',
 }
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
 
 async function getPhotos() {
   try {

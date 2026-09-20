@@ -15,6 +15,7 @@ interface ServiceArea {
   active: boolean
 }
 
+
 export default function ServiceAreasPage() {
   const liveContact = useBusinessContact()
   const activePhone = liveContact.phone || SITE_CONFIG.phone
@@ -22,14 +23,28 @@ export default function ServiceAreasPage() {
   const [searchTerm, setSearchTerm] = useState('')
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    fetch('/api/service-areas')
+  const loadAreas = () => {
+    fetch('/api/service-areas', { cache: 'no-store' })
       .then((res) => res.json())
       .then((data) => {
-        if (data.success && data.data) setAreas(data.data)
+        if (data.success && Array.isArray(data.data)) setAreas(data.data)
       })
       .catch((e) => console.error(e))
       .finally(() => setLoading(false))
+  }
+
+  useEffect(() => {
+    loadAreas()
+
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === 'stardigital_updated_at') loadAreas()
+    }
+    window.addEventListener('storage', handleStorage)
+    window.addEventListener('focus', loadAreas)
+    return () => {
+      window.removeEventListener('storage', handleStorage)
+      window.removeEventListener('focus', loadAreas)
+    }
   }, [])
 
   const filteredAreas = areas.filter(

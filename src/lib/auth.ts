@@ -36,12 +36,19 @@ export function getAuthFromHeader(authHeader: string | null): JWTPayload | null 
 }
 
 /**
- * JSON response helpers
+ * JSON response helpers with strict no-store headers
  */
+const noCacheHeaders = {
+  'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',
+  Pragma: 'no-cache',
+  Expires: '0',
+}
+
 export function jsonOk<T>(data: T, status = 200) {
-  return Response.json({ success: true, data }, { status })
+  return Response.json({ success: true, data }, { status, headers: noCacheHeaders })
 }
 
 export function jsonError(message: string, code = 'ERROR', status = 400) {
-  return Response.json({ success: false, error: message, code }, { status })
+  return Response.json({ success: false, error: message, code }, { status, headers: noCacheHeaders })
 }
+

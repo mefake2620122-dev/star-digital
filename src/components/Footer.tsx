@@ -15,6 +15,8 @@ export function Footer({ contact }: FooterProps) {
   const activePhone = contact?.phone || liveContact.phone || SITE_CONFIG.phone
   const activeWhatsapp = contact?.whatsapp || liveContact.whatsapp || SITE_CONFIG.whatsapp
   const activeSecondary = contact?.secondaryPhone || liveContact.secondaryPhone || SITE_CONFIG.secondaryPhone
+  const activeAddress = contact?.address || liveContact.address || SITE_CONFIG.address
+  const activeEmail = contact?.email || liveContact.email || SITE_CONFIG.email
 
   const services = [
     { name: 'AC Repair', slug: 'ac' },
@@ -119,9 +121,8 @@ export function Footer({ contact }: FooterProps) {
               <li className="flex items-start gap-2">
                 <MapPin className="w-4 h-4 text-star-400 mt-0.5 shrink-0" />
                 <div>
-                  <span className="block text-white/90 font-medium">Maqbara Gwaltoli</span>
-                  <span className="block text-xs text-white/60">Near Elgin Mill, Civil Lines</span>
-                  <span className="block text-xs text-white/60">Kanpur - 208001, UP</span>
+                  <span className="block text-white/90 font-medium text-xs sm:text-sm">{activeAddress}</span>
+                  <span className="block text-[11px] text-white/60">Kanpur, Uttar Pradesh</span>
                 </div>
               </li>
               <li className="flex items-center gap-2">
@@ -143,8 +144,8 @@ export function Footer({ contact }: FooterProps) {
               </li>
               <li className="flex items-center gap-2">
                 <Mail className="w-4 h-4 text-star-400 shrink-0" />
-                <a href={`mailto:${SITE_CONFIG.email}`} className="hover:text-white transition-colors">
-                  {SITE_CONFIG.email}
+                <a href={`mailto:${activeEmail}`} className="hover:text-white transition-colors">
+                  {activeEmail}
                 </a>
               </li>
             </ul>

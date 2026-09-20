@@ -130,7 +130,7 @@ export default function ContactPage() {
                       Chat On WhatsApp
                     </a>
                     <p className="text-slate-500 text-xs mt-0.5">
-                      Instant photo sharing & symptom diagnosis
+                      Direct photo sharing & symptom diagnosis
                     </p>
                   </div>
                 </div>

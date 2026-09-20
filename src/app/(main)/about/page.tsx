@@ -7,6 +7,8 @@ export const metadata = {
   title: 'About Us | STAR DIGITAL Kanpur Appliance Care',
   description: 'Learn about STAR DIGITAL: Certified doorstep appliance repair and installation specialists operating from Maqbara Gwaltoli, Near Elgin Mill, Civil Lines, Kanpur since 2014.',
 }
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
 
 export default async function AboutPage() {
   const contact = await getLiveContact()

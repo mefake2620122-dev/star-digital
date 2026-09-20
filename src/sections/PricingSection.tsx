@@ -267,8 +267,8 @@ export function PricingSection({ showHeader = true, className = '', initialItems
   const activeSecondary = liveContact.secondaryPhone || SITE_CONFIG.secondaryPhone
   const activeWhatsapp = liveContact.whatsapp || SITE_CONFIG.whatsapp
 
-  useEffect(() => {
-    fetch('/api/pricing')
+  const loadPricing = () => {
+    fetch('/api/pricing', { cache: 'no-store' })
       .then((res) => res.json())
       .then((json) => {
         if (json?.success && Array.isArray(json.data) && json.data.length > 0) {
@@ -276,6 +276,40 @@ export function PricingSection({ showHeader = true, className = '', initialItems
         }
       })
       .catch(() => {})
+  }
+
+  useEffect(() => {
+    loadPricing()
+
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === 'stardigital_updated_at') {
+        loadPricing()
+      }
+    }
+    const handleFocus = () => {
+      loadPricing()
+    }
+
+    let channel: BroadcastChannel | null = null
+    try {
+      if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
+        channel = new BroadcastChannel('stardigital_sync')
+        channel.onmessage = (event) => {
+          if (event.data?.type === 'PRICING_UPDATED' || event.data?.type === 'SYNC_ALL') {
+            loadPricing()
+          }
+        }
+      }
+    } catch {}
+
+    window.addEventListener('storage', handleStorage)
+    window.addEventListener('focus', handleFocus)
+
+    return () => {
+      window.removeEventListener('storage', handleStorage)
+      window.removeEventListener('focus', handleFocus)
+      if (channel) channel.close()
+    }
   }, [])
 
   // Parse features helper

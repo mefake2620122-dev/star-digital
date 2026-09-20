@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getAuthFromHeader, jsonOk, jsonError } from '@/lib/auth'
+import { revalidateAll } from '@/lib/revalidate'
 
 export const dynamic = 'force-dynamic'
 
@@ -43,6 +44,7 @@ export async function POST(req: NextRequest) {
       },
     })
 
+    revalidateAll()
     return jsonOk(newPhoto, 201)
   } catch (error) {
     console.error('Failed to create photo:', error)

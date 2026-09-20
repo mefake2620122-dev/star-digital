@@ -125,7 +125,7 @@ export function ReviewFormClient() {
 
           <div className="space-y-2">
             <span className="inline-block px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold uppercase tracking-wider">
-              Published Live Instantly
+              Review Submitted Successfully
             </span>
             <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
               Thank You, {name}!
@@ -333,7 +333,7 @@ export function ReviewFormClient() {
             </div>
             <div className="flex items-center gap-1.5">
               <Clock className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-              <span>Publishes Instantly to Live Feed</span>
+              <span>Direct Customer Feedback</span>
             </div>
           </div>
 

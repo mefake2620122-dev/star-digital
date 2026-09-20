@@ -1,9 +1,10 @@
 import { NextRequest } from 'next/server'
-import { revalidatePath } from 'next/cache'
+import { revalidateAll } from '@/lib/revalidate'
 import { prisma } from '@/lib/prisma'
 import { jsonOk, jsonError } from '@/lib/auth'
 
 export const dynamic = 'force-dynamic'
+export const revalidate = 0
 
 /**
  * GET /api/reviews
@@ -64,13 +65,7 @@ export async function POST(req: NextRequest) {
       },
     })
 
-    try {
-      revalidatePath('/')
-      revalidatePath('/about')
-    } catch {
-      // safe fallback
-    }
-
+    revalidateAll()
     return jsonOk(newReview, 201)
   } catch (error) {
     console.error('Error submitting review:', error)

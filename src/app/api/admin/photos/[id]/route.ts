@@ -1,6 +1,10 @@
 import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getAuthFromHeader, jsonOk, jsonError } from '@/lib/auth'
+import { revalidateAll } from '@/lib/revalidate'
+
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
 
 interface RouteParams {
   params: { id: string }
@@ -30,6 +34,7 @@ export async function PUT(req: NextRequest, { params }: RouteParams) {
       },
     })
 
+    revalidateAll()
     return jsonOk(updated)
   } catch (error) {
     console.error('Failed to update photo:', error)
@@ -47,6 +52,7 @@ export async function DELETE(req: NextRequest, { params }: RouteParams) {
     if (!photo) return jsonError('Photo not found', 'NOT_FOUND', 404)
 
     await prisma.photo.delete({ where: { id } })
+    revalidateAll()
     return jsonOk({ message: 'Photo deleted successfully' })
   } catch (error) {
     console.error('Failed to delete photo:', error)

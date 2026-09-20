@@ -8,6 +8,8 @@ export const metadata = {
   title: 'Appliance Repair Services in Kanpur | STAR DIGITAL',
   description: 'Certified doorstep repair for AC, Refrigerator, Washing Machine, LED TV, CCTV, and Home Appliances in Kanpur. 30-day warranty & genuine parts.',
 }
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
 
 async function getServices() {
   try {

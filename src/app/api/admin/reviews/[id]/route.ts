@@ -1,6 +1,10 @@
 import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getAuthFromHeader, jsonOk, jsonError } from '@/lib/auth'
+import { revalidateAll } from '@/lib/revalidate'
+
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
 
 export async function PUT(
   req: NextRequest,
@@ -20,6 +24,7 @@ export async function PUT(
         ...(published !== undefined ? { published } : {}),
       },
     })
+    revalidateAll()
     return jsonOk(updated)
   } catch {
     return jsonError('Failed to update review', 'SERVER_ERROR', 500)
@@ -34,6 +39,7 @@ export async function DELETE(
     return jsonError('Unauthorized', 'UNAUTHORIZED', 401)
   try {
     await prisma.review.delete({ where: { id: params.id } })
+    revalidateAll()
     return jsonOk({ message: 'Review deleted' })
   } catch {
     return jsonError('Failed to delete review', 'SERVER_ERROR', 500)

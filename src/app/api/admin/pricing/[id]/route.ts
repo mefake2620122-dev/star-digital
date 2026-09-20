@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getAuthFromHeader, jsonOk, jsonError } from '@/lib/auth'
+import { revalidateAll } from '@/lib/revalidate'
 
 export const dynamic = 'force-dynamic'
 
@@ -61,6 +62,7 @@ export async function PUT(
       data: dataToUpdate,
     })
 
+    revalidateAll()
     return jsonOk(updated)
   } catch (error) {
     console.error('Failed to update pricing item:', error)
@@ -80,6 +82,7 @@ export async function DELETE(
       where: { id: params.id },
     })
 
+    revalidateAll()
     return jsonOk({ message: 'Pricing item deleted successfully' })
   } catch (error) {
     console.error('Failed to delete pricing item:', error)

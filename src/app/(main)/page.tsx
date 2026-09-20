@@ -8,6 +8,9 @@ import { ServiceAreaSection } from '@/sections/ServiceAreaSection'
 import { QuickHelpSection } from '@/sections/QuickHelpSection'
 import { FinalCTASection } from '@/sections/FinalCTASection'
 import { ScrollReveal } from '@/components/ScrollReveal'
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+export const fetchCache = 'force-no-store'
 
 export default function HomePage() {
   return (

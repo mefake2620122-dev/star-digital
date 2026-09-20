@@ -6,6 +6,8 @@ export const metadata = {
   description:
     'Read real, verified doorstep appliance repair reviews from Kanpur residents. Rated 4.9/5 for LED TV, AC, Refrigerator, and Washing Machine repairs.',
 }
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
 
 export default function ReviewsPage() {
   return (

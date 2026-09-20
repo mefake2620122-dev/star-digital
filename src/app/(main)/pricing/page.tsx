@@ -10,6 +10,8 @@ export const metadata = {
   description:
     'Transparent, honest doorstep repair rates in Kanpur for LED/LCD TV, AC, Refrigerator, and Washing Machine. Diagnostic inspection fee 100% adjusted into final repair bill.',
 }
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
 
 export default async function PricingPage() {
   const [contact, pricingItems] = await Promise.all([
@@ -106,7 +108,7 @@ export default async function PricingPage() {
               Quick Phone Consultation
             </span>
             <h3 className="text-2xl sm:text-3xl font-bold">
-              Need an instant quote for your specific model?
+              Need a direct quote for your specific model?
             </h3>
             <p className="text-xs sm:text-sm text-slate-400 max-w-lg">
               Speak directly with our technical supervisor in Civil Lines, Kanpur. Share your appliance symptoms for a quick estimate.
