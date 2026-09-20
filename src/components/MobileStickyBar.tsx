@@ -25,6 +25,9 @@ export function MobileStickyBar({ contact }: MobileStickyBarProps) {
       <div className="grid grid-cols-2 p-2 gap-2">
         <a
           href={getDialerUrl(activePhone)}
+          onClick={() => {
+            window.location.href = getDialerUrl(activePhone)
+          }}
           className="flex items-center justify-center gap-2 py-3 px-3 rounded-xl bg-red-600 active:bg-red-700 text-white font-bold text-xs shadow-md shadow-red-600/25 transition-transform active:scale-95"
           aria-label={`Call Star Digital at ${activePhone}`}
         >

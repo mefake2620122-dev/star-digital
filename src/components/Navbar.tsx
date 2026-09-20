@@ -233,7 +233,10 @@ export function Navbar({ contact }: NavbarProps) {
 
               <a
                 href={getDialerUrl(activePhone)}
-                onClick={() => setMobileMenuOpen(false)}
+                onClick={() => {
+                  window.location.href = getDialerUrl(activePhone)
+                  setTimeout(() => setMobileMenuOpen(false), 300)
+                }}
                 className="flex items-center justify-center gap-2 py-3 px-3 rounded-xl bg-star-600 active:bg-star-700 text-white font-bold text-xs shadow-md"
               >
                 <Phone className="w-4 h-4 fill-current" />

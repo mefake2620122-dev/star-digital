@@ -55,8 +55,17 @@ export function getWhatsAppUrl(message?: string, phone?: string): string {
 
 // ── Tel Dialer Link ────────────────────────────────────────────────────────────
 // NEVER use target="_blank" with tel: — it breaks iOS/Android native dialer
+function normalizeDialerNumber(phone?: string): string {
+  const raw = (phone || SITE_CONFIG.phone).trim()
+  const digits = raw.replace(/[^0-9]/g, '')
+  if (digits.length >= 10) {
+    return '+91' + digits.slice(-10)
+  }
+  return '+91' + digits
+}
+
 export function getDialerUrl(phone?: string): string {
-  return normalizePhoneNumber(phone || SITE_CONFIG.phone).telUrl
+  return `tel:${normalizeDialerNumber(phone)}`
 }
 
 export function generateServiceMsg(serviceName: string, issue?: string, area?: string): string {

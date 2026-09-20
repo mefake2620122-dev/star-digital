@@ -18,6 +18,17 @@ export function WhatsAppGlobalHandler() {
       const href = target.getAttribute('href')
       if (!href) return
 
+      // On mobile devices, ensure tel: dialer links invoke native phone app directly
+      if (href.startsWith('tel:')) {
+        const isMobile =
+          typeof navigator !== 'undefined' &&
+          /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+        if (isMobile) {
+          window.location.href = href
+        }
+        return
+      }
+
       const isWhatsApp =
         href.startsWith('whatsapp://') ||
         href.includes('wa.me') ||
@@ -79,9 +90,9 @@ export function WhatsAppGlobalHandler() {
       }
     }
 
-    document.addEventListener('click', handleAnchorClick, { capture: true })
+    document.addEventListener('click', handleAnchorClick)
     return () => {
-      document.removeEventListener('click', handleAnchorClick, { capture: true })
+      document.removeEventListener('click', handleAnchorClick)
     }
   }, [])
 
