@@ -6,7 +6,7 @@ import path from 'path'
 const prisma = new PrismaClient({
   datasources: {
     db: {
-      url: `file:${path.resolve(__dirname, 'dev.db')}`,
+      url: process.env.DIRECT_URL || process.env.DATABASE_URL,
     },
   },
 })
@@ -369,6 +369,13 @@ async function main() {
   }
 
   console.log('Star Digital database seeded successfully with SiteContent CMS!')
+
+  // 8. Seed Pricing items
+  try {
+    await import('./seed-pricing')
+  } catch (err) {
+    console.error('Pricing seed error:', err)
+  }
 }
 
 main()

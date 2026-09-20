@@ -5,7 +5,7 @@ import path from 'path'
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient }
 
 function getDatabaseUrl() {
-  const envUrl = process.env.DATABASE_URL || 'file:./dev.db'
+  const envUrl = process.env.POSTGRES_PRISMA_URL || process.env.DATABASE_URL || 'file:./dev.db'
   if (envUrl.startsWith('file:')) {
     let filePath = envUrl.replace('file:', '')
     if (filePath.startsWith('./')) filePath = filePath.slice(2)
