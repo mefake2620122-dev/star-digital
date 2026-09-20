@@ -6,16 +6,14 @@ import { revalidatePath } from 'next/cache'
  */
 export function revalidateAll() {
   try {
-    revalidatePath('/', 'layout')
-    revalidatePath('/')
     revalidatePath('/pricing')
     revalidatePath('/services')
-    revalidatePath('/services/[slug]')
+    revalidatePath('/service-areas')
     revalidatePath('/photos')
     revalidatePath('/reviews')
-    revalidatePath('/service-areas')
     revalidatePath('/about')
     revalidatePath('/contact')
+    revalidatePath('/')
   } catch (error) {
     console.error('Revalidation error:', error)
   }

@@ -165,11 +165,14 @@ export default function AdminDashboardPage() {
   const triggerSiteSync = (type = 'SYNC_ALL') => {
     try {
       if (typeof window !== 'undefined') {
-        localStorage.setItem('stardigital_updated_at', Date.now().toString())
+        const now = Date.now().toString()
+        localStorage.setItem('stardigital_updated_at', now)
         if ('BroadcastChannel' in window) {
           const channel = new BroadcastChannel('stardigital_sync')
           channel.postMessage({ type, timestamp: Date.now() })
-          channel.close()
+          setTimeout(() => {
+            try { channel.close() } catch {}
+          }, 300)
         }
       }
     } catch {}
@@ -177,12 +180,24 @@ export default function AdminDashboardPage() {
 
   const authFetch = async (url: string, options: RequestInit = {}) => {
     const token = getToken()
-    const headers = {
+    const headers: Record<string, string> = {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-      ...(options.headers || {}),
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      Pragma: 'no-cache',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...((options.headers as Record<string, string>) || {}),
     }
-    const res = await fetch(url, { ...options, headers })
+
+    const isGet = !options.method || options.method.toUpperCase() === 'GET'
+    const cacheBustedUrl = isGet
+      ? `${url}${url.includes('?') ? '&' : '?'}_t=${Date.now()}`
+      : url
+
+    const res = await fetch(cacheBustedUrl, {
+      cache: 'no-store',
+      ...options,
+      headers,
+    })
     if (res.status === 401) {
       handleLogout()
       throw new Error('Session expired')
@@ -885,9 +900,10 @@ export default function AdminDashboardPage() {
       setDeletingPricingId(id)
       const res = await authFetch(`/api/admin/pricing/${id}`, { method: 'DELETE' })
       if (res.success) {
-        setPricingItems(pricingItems.filter((p) => p.id !== id))
+        setPricingItems((prev) => prev.filter((p) => p.id !== id))
         triggerSiteSync('PRICING_UPDATED')
         setAlertMsg({ type: 'success', text: `Rate card "${name}" deleted.` })
+        setTimeout(() => setAlertMsg(null), 3000)
       } else {
         throw new Error(res.error || 'Failed to delete pricing item')
       }

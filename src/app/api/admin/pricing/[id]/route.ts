@@ -84,7 +84,11 @@ export async function DELETE(
 
     revalidateAll()
     return jsonOk({ message: 'Pricing item deleted successfully' })
-  } catch (error) {
+  } catch (error: any) {
+    if (error?.code === 'P2025') {
+      revalidateAll()
+      return jsonOk({ message: 'Pricing item deleted successfully' })
+    }
     console.error('Failed to delete pricing item:', error)
     return jsonError('Failed to delete pricing item', 'SERVER_ERROR', 500)
   }

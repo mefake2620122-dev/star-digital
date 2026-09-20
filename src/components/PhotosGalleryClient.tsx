@@ -39,9 +39,58 @@ const CATEGORY_TABS = [
 ]
 
 export function PhotosGalleryClient({ initialPhotos }: PhotosGalleryClientProps) {
-  const [photos] = useState<PhotoItem[]>(initialPhotos || [])
+  const [photos, setPhotos] = useState<PhotoItem[]>(initialPhotos || [])
   const [activeCategory, setActiveCategory] = useState<string>('ALL')
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number | null>(null)
+
+  useEffect(() => {
+    if (Array.isArray(initialPhotos)) {
+      setPhotos(initialPhotos)
+    }
+  }, [initialPhotos])
+
+  const loadPhotos = () => {
+    fetch(`/api/photos?_t=${Date.now()}`, {
+      cache: 'no-store',
+      headers: {
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        Pragma: 'no-cache',
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && Array.isArray(data.data)) {
+          setPhotos(data.data)
+        }
+      })
+      .catch(() => {})
+  }
+
+  useEffect(() => {
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === 'stardigital_updated_at') loadPhotos()
+    }
+
+    let channel: BroadcastChannel | null = null
+    try {
+      if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
+        channel = new BroadcastChannel('stardigital_sync')
+        channel.onmessage = (event) => {
+          if (event.data?.type === 'PHOTOS_UPDATED' || event.data?.type === 'SYNC_ALL') {
+            loadPhotos()
+          }
+        }
+      }
+    } catch {}
+
+    window.addEventListener('storage', handleStorage)
+    window.addEventListener('focus', loadPhotos)
+    return () => {
+      window.removeEventListener('storage', handleStorage)
+      window.removeEventListener('focus', loadPhotos)
+      if (channel) channel.close()
+    }
+  }, [])
 
   const filteredPhotos = useMemo(() => {
     if (activeCategory === 'ALL') return photos

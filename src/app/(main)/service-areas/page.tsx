@@ -24,7 +24,13 @@ export default function ServiceAreasPage() {
   const [loading, setLoading] = useState(true)
 
   const loadAreas = () => {
-    fetch('/api/service-areas', { cache: 'no-store' })
+    fetch(`/api/service-areas?_t=${Date.now()}`, {
+      cache: 'no-store',
+      headers: {
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        Pragma: 'no-cache',
+      },
+    })
       .then((res) => res.json())
       .then((data) => {
         if (data.success && Array.isArray(data.data)) setAreas(data.data)
@@ -39,11 +45,25 @@ export default function ServiceAreasPage() {
     const handleStorage = (e: StorageEvent) => {
       if (e.key === 'stardigital_updated_at') loadAreas()
     }
+
+    let channel: BroadcastChannel | null = null
+    try {
+      if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
+        channel = new BroadcastChannel('stardigital_sync')
+        channel.onmessage = (event) => {
+          if (event.data?.type === 'AREAS_UPDATED' || event.data?.type === 'SYNC_ALL') {
+            loadAreas()
+          }
+        }
+      }
+    } catch {}
+
     window.addEventListener('storage', handleStorage)
     window.addEventListener('focus', loadAreas)
     return () => {
       window.removeEventListener('storage', handleStorage)
       window.removeEventListener('focus', loadAreas)
+      if (channel) channel.close()
     }
   }, [])
 

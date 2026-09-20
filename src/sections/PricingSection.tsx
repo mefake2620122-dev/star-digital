@@ -262,17 +262,35 @@ interface PricingSectionProps {
 export function PricingSection({ showHeader = true, className = '', initialItems = [] }: PricingSectionProps) {
   const [activeTab, setActiveTab] = useState<string>('tv')
   const [dbItems, setDbItems] = useState<any[]>(initialItems)
+  const [hasLoadedFromDb, setHasLoadedFromDb] = useState<boolean>(Boolean(initialItems && initialItems.length > 0))
   const liveContact = useBusinessContact()
   const activePhone = liveContact.phone || SITE_CONFIG.phone
   const activeSecondary = liveContact.secondaryPhone || SITE_CONFIG.secondaryPhone
   const activeWhatsapp = liveContact.whatsapp || SITE_CONFIG.whatsapp
 
+  // Synchronize when initialItems prop updates from SSR
+  useEffect(() => {
+    if (Array.isArray(initialItems)) {
+      setDbItems(initialItems)
+      if (initialItems.length > 0) {
+        setHasLoadedFromDb(true)
+      }
+    }
+  }, [initialItems])
+
   const loadPricing = () => {
-    fetch('/api/pricing', { cache: 'no-store' })
+    fetch(`/api/pricing?_t=${Date.now()}`, {
+      cache: 'no-store',
+      headers: {
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        Pragma: 'no-cache',
+      },
+    })
       .then((res) => res.json())
       .then((json) => {
-        if (json?.success && Array.isArray(json.data) && json.data.length > 0) {
+        if (json?.success && Array.isArray(json.data)) {
           setDbItems(json.data)
+          setHasLoadedFromDb(true)
         }
       })
       .catch(() => {})
@@ -328,6 +346,22 @@ export function PricingSection({ showHeader = true, className = '', initialItems
   // Combine or build dynamic categories from DB items
   const dynamicCategories: ServiceCategoryPricing[] = PRICING_DATA.map((baseCat) => {
     const matchingDbItems = dbItems.filter((i) => i.categoryId === baseCat.id)
+    // Once loaded from database, the database is the single source of truth
+    if (hasLoadedFromDb) {
+      return {
+        ...baseCat,
+        items: matchingDbItems.map((item) => ({
+          name: item.name,
+          range: item.priceRange || item.range,
+          time: item.serviceTime || item.time || 'Same Day',
+          popular: Boolean(item.popular),
+          description: item.description,
+          features: parseFeatures(item.features),
+        })),
+      }
+    }
+
+    // Only fallback before DB loads
     if (matchingDbItems.length > 0) {
       return {
         ...baseCat,
@@ -472,9 +506,16 @@ export function PricingSection({ showHeader = true, className = '', initialItems
         </div>
 
         {/* Pricing Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {currentCategory.items.map((item, idx) => (
-            <ScrollReveal key={idx} animation="fade-up" delay={idx * 50}>
+        {currentCategory.items.length === 0 ? (
+          <div className="text-center py-16 px-4 bg-slate-50 rounded-3xl border border-dashed border-slate-200">
+            <p className="text-slate-500 font-medium text-sm">
+              No service rate cards currently listed for this category.
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {currentCategory.items.map((item, idx) => (
+              <ScrollReveal key={idx} animation="fade-up" delay={idx * 50}>
               <div
                 className={`h-full relative rounded-3xl p-6 sm:p-7 flex flex-col justify-between transition-all duration-200 ${
                   item.popular
@@ -540,6 +581,7 @@ export function PricingSection({ showHeader = true, className = '', initialItems
             </ScrollReveal>
           ))}
         </div>
+      )}
 
         {/* Pricing Policy & Note Strip */}
         <div className="mt-12 p-6 sm:p-8 rounded-3xl bg-slate-50 border border-slate-200/80">
