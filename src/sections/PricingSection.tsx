@@ -559,9 +559,12 @@ export function PricingSection({ showHeader = true, className = '', initialItems
                 <div className="pt-4 border-t border-slate-100 flex items-center gap-2">
                   <a
                     href={getWhatsAppUrl(
-                      `Hello STAR DIGITAL, I am inquiring about pricing for: ${item.name} (${item.range}). Please share technician availability in Kanpur.`
+                      `Hello STAR DIGITAL, I am inquiring about pricing for: ${item.name} (${item.range}). Please share technician availability in Kanpur.`,
+                      activeWhatsapp
                     )}
-                    className="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-[#25D366] text-white text-xs font-bold hover:bg-[#20bd5a] transition-all shadow-sm"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-[#25D366] text-white text-xs font-bold hover:bg-[#20bd5a] transition-all shadow-sm active:scale-95"
                     aria-label={`Inquire about ${item.name} on WhatsApp`}
                   >
                     <MessageSquare className="w-3.5 h-3.5 fill-current" />

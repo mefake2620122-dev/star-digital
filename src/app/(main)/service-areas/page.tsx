@@ -19,6 +19,7 @@ interface ServiceArea {
 export default function ServiceAreasPage() {
   const liveContact = useBusinessContact()
   const activePhone = liveContact.phone || SITE_CONFIG.phone
+  const activeWhatsapp = liveContact.whatsapp || SITE_CONFIG.whatsapp
   const [areas, setAreas] = useState<ServiceArea[]>([])
   const [searchTerm, setSearchTerm] = useState('')
   const [loading, setLoading] = useState(true)
@@ -158,7 +159,9 @@ export default function ServiceAreasPage() {
                     <span>Call Desk</span>
                   </a>
                   <a
-                    href={getWhatsAppUrl(`Hello STAR DIGITAL, I am located in ${area.name}, Kanpur and need an appliance repair technician.`)}
+                    href={getWhatsAppUrl(`Hello STAR DIGITAL, I am located in ${area.name}, Kanpur and need an appliance repair technician.`, activeWhatsapp)}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="text-xs font-semibold text-[#128C7E] hover:text-[#075E54] inline-flex items-center gap-1.5"
                   >
                     <MessageSquare className="w-3.5 h-3.5 fill-current text-[#25D366]" />

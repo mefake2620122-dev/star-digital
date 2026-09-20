@@ -1,12 +1,13 @@
 'use client'
 
 import { useEffect } from 'react'
+import { formatWhatsAppNumber } from '@/lib/phone-normalizer'
 
 /**
  * Universal WhatsApp click interceptor:
  * - On Mobile (Android / iOS): Opens native WhatsApp app directly via whatsapp:// URI scheme.
- *   This avoids the api.whatsapp.com bounce / redirect loop in mobile Chrome.
- * - On Desktop: Opens https://web.whatsapp.com/send in a new tab for seamless desktop chatting.
+ * - On Desktop / Laptop: Ensures official https://api.whatsapp.com/send gateway opens smoothly
+ *   in a new tab (allows both WhatsApp Web and WhatsApp Desktop app without popup blocking).
  */
 export function WhatsAppGlobalHandler() {
   useEffect(() => {
@@ -24,9 +25,6 @@ export function WhatsAppGlobalHandler() {
         href.includes('web.whatsapp.com')
 
       if (!isWhatsApp) return
-
-      // Prevent standard browser navigation to avoid redirect bounce on mobile
-      e.preventDefault()
 
       let phone = '919005888922'
       let text = 'Hello STAR DIGITAL, I need doorstep appliance repair service in Kanpur.'
@@ -57,26 +55,26 @@ export function WhatsAppGlobalHandler() {
         if (textMatch) text = decodeURIComponent(textMatch[1])
       }
 
-      // Ensure 91 country code and normalize
-      phone = phone.replace(/[^0-9]/g, '')
-      if (phone.length === 10) phone = '91' + phone
-      else if (phone.length === 11 && phone.startsWith('0')) phone = '91' + phone.slice(1)
-      if (!phone || phone.includes('9035085031')) phone = '919005888922'
-
+      // Universal phone normalization (clean 91XXXXXXXXXX)
+      const cleanPhone = formatWhatsAppNumber(phone)
       const encodedText = encodeURIComponent(text)
-      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-        navigator.userAgent
-      )
+
+      const isMobile =
+        typeof navigator !== 'undefined' &&
+        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
 
       if (isMobile) {
-        // Direct native application protocol dispatch
-        window.location.href = `whatsapp://send?phone=${phone}&text=${encodedText}`
+        // Direct native application protocol dispatch on mobile
+        e.preventDefault()
+        window.location.href = `whatsapp://send?phone=${cleanPhone}&text=${encodedText}`
       } else {
-        // Desktop Web WhatsApp in new tab
-        window.open(
-          `https://web.whatsapp.com/send?phone=${phone}&text=${encodedText}`,
-          '_blank',
-          'noopener,noreferrer'
+        // On Desktop / Laptop:
+        // Set standard attributes and allow native browser link navigation to official API gateway
+        target.setAttribute('target', '_blank')
+        target.setAttribute('rel', 'noopener noreferrer')
+        target.setAttribute(
+          'href',
+          `https://api.whatsapp.com/send/?phone=${cleanPhone}&text=${encodedText}`
         )
       }
     }

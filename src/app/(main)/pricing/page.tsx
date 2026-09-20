@@ -117,8 +117,10 @@ export default async function PricingPage() {
 
           <div className="flex flex-wrap items-center justify-center gap-3">
             <a
-              href={getWhatsAppUrl('Hello STAR DIGITAL, I need a price estimate for my appliance repair in Kanpur.')}
-              className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-[#25D366] text-white text-sm font-bold hover:bg-[#20bd5a] transition-all shadow-sm"
+              href={getWhatsAppUrl('Hello STAR DIGITAL, I need a price estimate for my appliance repair in Kanpur.', contact.whatsapp)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-[#25D366] text-white text-sm font-bold hover:bg-[#20bd5a] transition-all shadow-sm active:scale-95"
             >
               <MessageSquare className="w-4 h-4 fill-current" />
               <span>WhatsApp Us</span>

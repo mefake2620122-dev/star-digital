@@ -125,6 +125,8 @@ export default function ContactPage() {
                     </p>
                     <a
                       href={getWhatsAppUrl('Hello STAR DIGITAL, I have an appliance query.', activeWhatsapp)}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="font-bold text-slate-900 hover:text-[#25D366] transition-colors text-base block"
                     >
                       Chat On WhatsApp

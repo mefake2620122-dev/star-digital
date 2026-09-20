@@ -46,29 +46,11 @@ const commonProblems = [
 
 export function QuickHelpSection() {
   const contact = useBusinessContact()
-  const activeWhatsapp = (contact.whatsapp || SITE_CONFIG.whatsapp).replace(/[^0-9]/g, '')
-  const normalizedWA = activeWhatsapp.length === 10 ? '91' + activeWhatsapp : (activeWhatsapp || '919005888922')
-
   const [selectedId, setSelectedId] = useState(commonProblems[0].id)
 
-  const handleGetHelp = () => {
-    const selected = commonProblems.find((p) => p.id === selectedId)
-    if (selected) {
-      const msg = `Hello STAR DIGITAL, I have an appliance issue in Kanpur: "${selected.label}". Please share technician availability.`
-      const isMobile =
-        typeof navigator !== 'undefined' &&
-        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
-      if (isMobile) {
-        window.location.href = `whatsapp://send?phone=${normalizedWA}&text=${encodeURIComponent(msg)}`
-      } else {
-        window.open(
-          `https://web.whatsapp.com/send?phone=${normalizedWA}&text=${encodeURIComponent(msg)}`,
-          '_blank',
-          'noopener,noreferrer'
-        )
-      }
-    }
-  }
+  const selected = commonProblems.find((p) => p.id === selectedId) || commonProblems[0]
+  const msg = `Hello STAR DIGITAL, I have an appliance issue in Kanpur: "${selected.label}". Please share technician availability.`
+  const waUrl = getWhatsAppUrl(msg, contact.whatsapp)
 
   return (
     <section className="py-16 sm:py-20 bg-white border-y border-black/[0.06]">
@@ -125,13 +107,15 @@ export function QuickHelpSection() {
 
         {/* CTA */}
         <div className="text-center mt-8">
-          <button
-            onClick={handleGetHelp}
+          <a
+            href={waUrl}
+            target="_blank"
+            rel="noopener noreferrer"
             className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-apple bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-sm sm:text-base active:scale-[0.98] transition-all shadow-sm"
           >
             <MessageSquare className="w-4 h-4 fill-current" />
             <span>Chat With Technician On WhatsApp</span>
-          </button>
+          </a>
           <p className="text-xs text-apple-secondary mt-2.5">
             Opens direct WhatsApp conversation with your selected problem pre-filled.
           </p>

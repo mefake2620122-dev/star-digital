@@ -23,53 +23,40 @@ export const SITE_CONFIG = {
   primaryLocationName: 'Maqbara Gwaltoli, Near Elgin Mill, Civil Lines, Kanpur',
 }
 
-// ── WhatsApp Deep Link ─────────────────────────────────────────────────────────
-function normalizeWANumber(phone?: string): string {
-  let clean = (phone || SITE_CONFIG.whatsapp).replace(/[^0-9]/g, '')
-  if (!clean) clean = '919005888922'
-  if (clean.length === 10) clean = '91' + clean
-  else if (clean.length === 11 && clean.startsWith('0')) clean = '91' + clean.slice(1)
-  return clean
-}
+import { normalizePhoneNumber, formatWhatsAppNumber } from './phone-normalizer'
 
+// ── WhatsApp Deep Link ─────────────────────────────────────────────────────────
 export function getNativeWhatsAppUrl(message?: string, phone?: string): string {
-  const num = normalizeWANumber(phone)
+  const num = formatWhatsAppNumber(phone || SITE_CONFIG.whatsapp)
   const msg = message ?? 'Hello STAR DIGITAL, I need doorstep appliance repair service in Kanpur.'
   return `whatsapp://send?phone=${num}&text=${encodeURIComponent(msg)}`
 }
 
 export function getWhatsAppUrl(message?: string, phone?: string): string {
-  const num = normalizeWANumber(phone)
+  const num = formatWhatsAppNumber(phone || SITE_CONFIG.whatsapp)
   const msg = message ?? 'Hello STAR DIGITAL, I need doorstep appliance repair service in Kanpur.'
   const encoded = encodeURIComponent(msg)
 
+  // On Mobile: dispatch directly to native WhatsApp app
   if (typeof window !== 'undefined' && typeof navigator !== 'undefined') {
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
       navigator.userAgent
     )
     if (isMobile) {
       return `whatsapp://send?phone=${num}&text=${encoded}`
-    } else {
-      return `https://web.whatsapp.com/send?phone=${num}&text=${encoded}`
     }
   }
 
-  return `https://wa.me/${num}?text=${encoded}`
+  // On Desktop / Laptop: Official WhatsApp Web & Desktop gateway
+  // Opens reliably in a new tab without popup-blocker issues,
+  // prompting user to open WhatsApp Desktop app or use WhatsApp Web.
+  return `https://api.whatsapp.com/send/?phone=${num}&text=${encoded}`
 }
 
 // ── Tel Dialer Link ────────────────────────────────────────────────────────────
 // NEVER use target="_blank" with tel: — it breaks iOS/Android native dialer
-function normalizeDialerNumber(phone?: string): string {
-  const raw = (phone || SITE_CONFIG.phone).trim()
-  const digits = raw.replace(/[^0-9]/g, '')
-  if (digits.length >= 10) {
-    return '+91' + digits.slice(-10)
-  }
-  return '+91' + digits
-}
-
 export function getDialerUrl(phone?: string): string {
-  return `tel:${normalizeDialerNumber(phone)}`
+  return normalizePhoneNumber(phone || SITE_CONFIG.phone).telUrl
 }
 
 export function generateServiceMsg(serviceName: string, issue?: string, area?: string): string {

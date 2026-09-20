@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { getDialerUrl, getWhatsAppUrl } from '@/lib/site'
 import { uploadImageFile } from '@/lib/image-upload'
+import { normalizePhoneNumber, formatPhoneDisplay } from '@/lib/phone-normalizer'
 import {
   Inbox,
   Wrench,
@@ -292,7 +293,25 @@ export default function AdminDashboardPage() {
 
   // ── CMS Content Handlers ──
   const handleSaveCmsKey = async (key: string) => {
-    const val = cmsEdits[key]
+    let val = cmsEdits[key] ?? ''
+    // Auto-normalize phone and WhatsApp numbers
+    if (
+      key === 'business_phone' ||
+      key === 'contact_phone' ||
+      key === 'emergency_phone' ||
+      key === 'helpline_phone' ||
+      key === 'business_whatsapp' ||
+      key === 'contact_whatsapp'
+    ) {
+      const norm = normalizePhoneNumber(val)
+      if (!norm.isValid && val.trim().length > 0) {
+        setAlertMsg({ type: 'error', text: 'Please enter a valid 10-digit mobile number (e.g. 90058 88922)' })
+        return
+      }
+      val = norm.display
+      setCmsEdits((prev) => ({ ...prev, [key]: val }))
+    }
+
     try {
       setSavingKey(key)
       const res = await authFetch('/api/admin/site-content', {
@@ -314,28 +333,46 @@ export default function AdminDashboardPage() {
   }
 
   const handleSaveQuickContact = async () => {
+    const normP = normalizePhoneNumber(quickPhone)
+    const normW = normalizePhoneNumber(quickWhatsapp)
+
+    if (!normP.isValid && quickPhone.trim().length > 0) {
+      setAlertMsg({ type: 'error', text: 'Calling number must be a valid 10-digit mobile number' })
+      return
+    }
+    if (!normW.isValid && quickWhatsapp.trim().length > 0) {
+      setAlertMsg({ type: 'error', text: 'WhatsApp number must be a valid 10-digit mobile number' })
+      return
+    }
+
+    const cleanP = normP.display
+    const cleanW = normW.display
+
+    setQuickPhone(cleanP)
+    setQuickWhatsapp(cleanW)
+
     try {
       setSavingQuickContact(true)
       const res = await authFetch('/api/admin/business-settings', {
         method: 'PUT',
         body: JSON.stringify({
-          phone: quickPhone.trim(),
-          whatsapp: quickWhatsapp.trim(),
+          phone: cleanP,
+          whatsapp: cleanW,
         }),
       })
 
       if (res.success || !res.error) {
         setCmsEdits((prev) => ({
           ...prev,
-          business_phone: quickPhone.trim(),
-          contact_phone: quickPhone.trim(),
-          business_whatsapp: quickWhatsapp.trim(),
-          contact_whatsapp: quickWhatsapp.trim(),
+          business_phone: cleanP,
+          contact_phone: cleanP,
+          business_whatsapp: cleanW,
+          contact_whatsapp: cleanW,
         }))
         triggerSiteSync('CONTACT_UPDATED')
         setAlertMsg({
           type: 'success',
-          text: `Helpline numbers updated to ${quickPhone.trim()} across website.`,
+          text: `Helpline numbers updated to ${cleanP} (WhatsApp: ${cleanW}) across website.`,
         })
         setTimeout(() => setAlertMsg(null), 4000)
       } else {
@@ -1348,33 +1385,59 @@ export default function AdminDashboardPage() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-6 mt-3.5 sm:mt-6">
                 <div className="space-y-1.5">
-                  <label className="block text-[11px] sm:text-xs font-bold text-slate-300 flex items-center gap-1.5">
-                    <Phone className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-red-400" />
-                    <span>Calling Phone Number</span>
+                  <label className="block text-[11px] sm:text-xs font-bold text-slate-300 flex items-center justify-between">
+                    <span className="flex items-center gap-1.5">
+                      <Phone className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-red-400" />
+                      <span>Calling Phone Number</span>
+                    </span>
+                    {normalizePhoneNumber(quickPhone).isValid && (
+                      <span className="text-[10px] text-emerald-400 font-mono font-semibold">
+                        ✓ Valid Indian Number
+                      </span>
+                    )}
                   </label>
                   <input
                     type="text"
                     value={quickPhone}
                     onChange={(e) => setQuickPhone(e.target.value)}
-                    placeholder="+91 90058 88922"
+                    onBlur={() => {
+                      if (quickPhone.trim()) setQuickPhone(formatPhoneDisplay(quickPhone))
+                    }}
+                    placeholder="+91 90058 88922 or 9005888922"
                     className="w-full px-3 sm:px-3.5 py-2 sm:py-2.5 rounded-xl bg-slate-800/90 border border-slate-700 text-xs sm:text-sm font-bold text-white focus:outline-none focus:border-red-500 transition-colors"
                   />
-                  <p className="text-[10px] text-slate-400">Pre-filled in caller dial pad when users tap Call Now.</p>
+                  <div className="flex items-center justify-between text-[10px] text-slate-400">
+                    <span>Pre-filled in dialer when users tap Call Now.</span>
+                    <span className="font-mono text-slate-300">{normalizePhoneNumber(quickPhone).display}</span>
+                  </div>
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block text-[11px] sm:text-xs font-bold text-slate-300 flex items-center gap-1.5">
-                    <MessageSquare className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-400" />
-                    <span>WhatsApp Booking Number</span>
+                  <label className="block text-[11px] sm:text-xs font-bold text-slate-300 flex items-center justify-between">
+                    <span className="flex items-center gap-1.5">
+                      <MessageSquare className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-400" />
+                      <span>WhatsApp Booking Number</span>
+                    </span>
+                    {normalizePhoneNumber(quickWhatsapp).isValid && (
+                      <span className="text-[10px] text-emerald-400 font-mono font-semibold">
+                        ✓ WA: {normalizePhoneNumber(quickWhatsapp).waFormat}
+                      </span>
+                    )}
                   </label>
                   <input
                     type="text"
                     value={quickWhatsapp}
                     onChange={(e) => setQuickWhatsapp(e.target.value)}
-                    placeholder="+91 90058 88922"
+                    onBlur={() => {
+                      if (quickWhatsapp.trim()) setQuickWhatsapp(formatPhoneDisplay(quickWhatsapp))
+                    }}
+                    placeholder="+91 90058 88922 or 9005888922"
                     className="w-full px-3 sm:px-3.5 py-2 sm:py-2.5 rounded-xl bg-slate-800/90 border border-slate-700 text-xs sm:text-sm font-bold text-white focus:outline-none focus:border-emerald-500 transition-colors"
                   />
-                  <p className="text-[10px] text-slate-400">Direct WhatsApp app launch on customer device.</p>
+                  <div className="flex items-center justify-between text-[10px] text-slate-400">
+                    <span>Direct WhatsApp launch on Mobile &amp; Laptop.</span>
+                    <span className="font-mono text-slate-300">Link: {normalizePhoneNumber(quickWhatsapp).waFormat}</span>
+                  </div>
                 </div>
               </div>
 
@@ -1553,8 +1616,24 @@ export default function AdminDashboardPage() {
                           type="text"
                           value={cmsEdits[item.key] ?? item.value}
                           onChange={(e) => setCmsEdits({ ...cmsEdits, [item.key]: e.target.value })}
+                          onBlur={() => {
+                            if (item.type === 'phone' || item.key.includes('phone') || item.key.includes('whatsapp')) {
+                              const cur = cmsEdits[item.key] ?? item.value
+                              if (cur?.trim()) {
+                                setCmsEdits({ ...cmsEdits, [item.key]: formatPhoneDisplay(cur) })
+                              }
+                            }
+                          }}
                           className="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs focus:outline-none focus:border-red-600 text-slate-800 font-medium"
                         />
+                        {(item.type === 'phone' || item.key.includes('phone') || item.key.includes('whatsapp')) && (
+                          <div className="flex items-center justify-between text-[10px] text-slate-400 pt-0.5">
+                            <span>Standard Indian format:</span>
+                            <span className="font-mono font-semibold text-slate-600">
+                              {normalizePhoneNumber(cmsEdits[item.key] ?? item.value).display}
+                            </span>
+                          </div>
+                        )}
                       </div>
 
                       <div className="flex justify-end pt-2 border-t border-slate-200/50">
@@ -1966,6 +2045,8 @@ export default function AdminDashboardPage() {
                               `Hello ${inq.name}, STAR DIGITAL here regarding your appliance service inquiry.`,
                               inq.phone
                             )}
+                            target="_blank"
+                            rel="noopener noreferrer"
                             className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-white text-[10px] sm:text-xs font-bold transition-all"
                           >
                             <MessageSquare className="w-3 h-3 fill-current" />

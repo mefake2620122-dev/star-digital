@@ -3,6 +3,8 @@ import { prisma } from '@/lib/prisma'
 import { getAuthFromHeader, jsonOk, jsonError } from '@/lib/auth'
 import { revalidateAll } from '@/lib/revalidate'
 
+import { normalizePhoneNumber } from '@/lib/phone-normalizer'
+
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
@@ -25,40 +27,59 @@ export async function PUT(req: NextRequest) {
     const contact = await prisma.businessContact.findFirst()
     if (!contact) return jsonError('Business contact not found', 'NOT_FOUND', 404)
 
+    let normalizedPhone = phone
+    let normalizedWhatsapp = whatsapp
+
+    if (phone && typeof phone === 'string') {
+      const normP = normalizePhoneNumber(phone)
+      if (!normP.isValid && phone.trim().length > 0) {
+        return jsonError('Please enter a valid 10-digit calling number (e.g. 90058 88922)', 'VALIDATION_ERROR', 400)
+      }
+      normalizedPhone = normP.display
+    }
+
+    if (whatsapp && typeof whatsapp === 'string') {
+      const normW = normalizePhoneNumber(whatsapp)
+      if (!normW.isValid && whatsapp.trim().length > 0) {
+        return jsonError('Please enter a valid 10-digit WhatsApp number (e.g. 90058 88922)', 'VALIDATION_ERROR', 400)
+      }
+      normalizedWhatsapp = normW.display
+    }
+
     const updated = await prisma.businessContact.update({
       where: { id: contact.id },
       data: {
-        ...(phone ? { phone } : {}),
-        ...(whatsapp ? { whatsapp } : {}),
+        ...(normalizedPhone ? { phone: normalizedPhone } : {}),
+        ...(normalizedWhatsapp ? { whatsapp: normalizedWhatsapp } : {}),
         ...(email ? { email } : {}),
         ...(address ? { address } : {}),
       },
     })
 
     // Also sync siteContent keys
-    if (phone) {
+    if (normalizedPhone) {
       await prisma.siteContent.upsert({
         where: { key: 'business_phone' },
-        update: { value: phone },
-        create: { key: 'business_phone', value: phone, label: 'Primary Phone', type: 'phone', group: 'contact' },
+        update: { value: normalizedPhone },
+        create: { key: 'business_phone', value: normalizedPhone, label: 'Primary Phone', type: 'phone', group: 'contact' },
       }).catch(() => null)
       await prisma.siteContent.upsert({
         where: { key: 'contact_phone' },
-        update: { value: phone },
-        create: { key: 'contact_phone', value: phone, label: 'Helpline Phone', type: 'phone', group: 'contact' },
+        update: { value: normalizedPhone },
+        create: { key: 'contact_phone', value: normalizedPhone, label: 'Helpline Phone', type: 'phone', group: 'contact' },
       }).catch(() => null)
     }
 
-    if (whatsapp) {
+    if (normalizedWhatsapp) {
       await prisma.siteContent.upsert({
         where: { key: 'business_whatsapp' },
-        update: { value: whatsapp },
-        create: { key: 'business_whatsapp', value: whatsapp, label: 'WhatsApp Number', type: 'phone', group: 'contact' },
+        update: { value: normalizedWhatsapp },
+        create: { key: 'business_whatsapp', value: normalizedWhatsapp, label: 'WhatsApp Number', type: 'phone', group: 'contact' },
       }).catch(() => null)
       await prisma.siteContent.upsert({
         where: { key: 'contact_whatsapp' },
-        update: { value: whatsapp },
-        create: { key: 'contact_whatsapp', value: whatsapp, label: 'Contact WhatsApp', type: 'phone', group: 'contact' },
+        update: { value: normalizedWhatsapp },
+        create: { key: 'contact_whatsapp', value: normalizedWhatsapp, label: 'Contact WhatsApp', type: 'phone', group: 'contact' },
       }).catch(() => null)
     }
 

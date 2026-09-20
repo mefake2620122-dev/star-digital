@@ -104,6 +104,8 @@ export function Navbar({ contact }: NavbarProps) {
           <div className="hidden sm:flex items-center gap-2.5">
             <a
               href={getWhatsAppUrl('Hello STAR DIGITAL, I need doorstep appliance repair service in Kanpur.', activeWhatsapp)}
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs lg:text-sm font-semibold rounded-apple text-slate-700 bg-slate-100 hover:bg-slate-200 active:scale-[0.98] transition-all"
               aria-label="Chat on WhatsApp"
             >
@@ -220,6 +222,8 @@ export function Navbar({ contact }: NavbarProps) {
             <div className="grid grid-cols-2 gap-2">
               <a
                 href={getWhatsAppUrl('Hello STAR DIGITAL, I need doorstep appliance repair service in Kanpur.', activeWhatsapp)}
+                target="_blank"
+                rel="noopener noreferrer"
                 onClick={() => setMobileMenuOpen(false)}
                 className="flex items-center justify-center gap-2 py-3 px-3 rounded-xl bg-[#25D366] active:bg-[#20bd5a] text-white font-bold text-xs shadow-md"
               >

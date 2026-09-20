@@ -113,7 +113,9 @@ export default async function PhotosPage() {
 
           <div className="flex flex-wrap items-center justify-center gap-3">
             <a
-              href={getWhatsAppUrl('Hello STAR DIGITAL, I am sharing a photo of my faulty appliance for diagnosis.')}
+              href={getWhatsAppUrl('Hello STAR DIGITAL, I am sharing a photo of my faulty appliance for diagnosis.', contact.whatsapp)}
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-[#25D366] text-white text-sm font-bold hover:bg-[#20bd5a] transition-all shadow-sm"
             >
               <MessageSquare className="w-4 h-4 fill-current" />

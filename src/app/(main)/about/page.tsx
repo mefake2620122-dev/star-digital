@@ -149,7 +149,9 @@ export default async function AboutPage() {
           </div>
           <div className="flex flex-col sm:flex-row gap-3 shrink-0 z-10">
             <a
-              href={getWhatsAppUrl('Hello STAR DIGITAL, I want to learn more about your appliance repair services in Kanpur.')}
+              href={getWhatsAppUrl('Hello STAR DIGITAL, I want to learn more about your appliance repair services in Kanpur.', contact.whatsapp)}
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-sm shadow-md transition-all active:scale-[0.98]"
             >
               <MessageSquare className="w-4 h-4 fill-current" />

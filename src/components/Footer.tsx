@@ -60,6 +60,8 @@ export function Footer({ contact }: FooterProps) {
             <div className="flex flex-wrap gap-3">
               <a
                 href={getWhatsAppUrl('Hello STAR DIGITAL, I need doorstep appliance repair in Kanpur.', activeWhatsapp)}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-4 py-2.5 rounded-apple bg-[#25D366] text-white text-sm font-semibold hover:bg-[#20bd5a] active:scale-[0.97] transition-all"
                 aria-label="WhatsApp Chat"
               >

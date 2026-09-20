@@ -42,6 +42,8 @@ export function FinalCTASection() {
 
             <a
               href={getWhatsAppUrl('Hello Star Digital, I need immediate appliance repair help in Kanpur.', activeWhatsapp)}
+              target="_blank"
+              rel="noopener noreferrer"
               className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-2xl bg-[#25D366] active:bg-[#20bd5a] hover:bg-[#20bd5a] text-white font-bold text-base shadow-lg shadow-emerald-600/20 active:scale-[0.98] transition-all"
             >
               <MessageSquare className="w-4 h-4 fill-current" />

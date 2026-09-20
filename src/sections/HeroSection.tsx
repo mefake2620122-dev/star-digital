@@ -89,6 +89,8 @@ export async function HeroSection() {
                   'Hello STAR DIGITAL, I need doorstep appliance repair service in Kanpur.',
                   businessWhatsapp
                 )}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 text-sm sm:text-base font-bold rounded-2xl bg-[#25D366] text-white active:bg-[#20bd5a] hover:bg-[#20bd5a] active:scale-[0.98] transition-all shadow-md shadow-emerald-600/20"
                 aria-label="Chat on WhatsApp with Star Digital technician"
               >
