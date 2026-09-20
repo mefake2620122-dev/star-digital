@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { getDialerUrl, getWhatsAppUrl } from '@/lib/site'
+import { uploadImageFile } from '@/lib/image-upload'
 import {
   Inbox,
   Wrench,
@@ -78,6 +79,8 @@ export default function AdminDashboardPage() {
   const [photoCategory, setPhotoCategory] = useState('repair')
   const [photoLocation, setPhotoLocation] = useState('Kanpur')
   const [uploadingPhotoFile, setUploadingPhotoFile] = useState(false)
+  const [uploadingCmsKey, setUploadingCmsKey] = useState<string | null>(null)
+  const [uploadingServiceImage, setUploadingServiceImage] = useState(false)
   const [savingPhoto, setSavingPhoto] = useState(false)
 
   // Pricing & Rate Card states
@@ -673,34 +676,67 @@ export default function AdminDashboardPage() {
     }
   }
 
-  // ── Photos Handlers ──
+  // ── Image Upload Handlers (Auto-compress from phone & persist to Supabase) ──
   const handlePhotoFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
 
     try {
       setUploadingPhotoFile(true)
-      const formData = new FormData()
-      formData.append('file', file)
-
       const token = getToken()
-      const res = await fetch('/api/admin/photos/upload', {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${token}` },
-        body: formData,
-      })
-      const data = await res.json()
-      if (data.success && data.data?.url) {
-        setPhotoImageUrl(data.data.url)
-        setAlertMsg({ type: 'success', text: 'Photo uploaded successfully.' })
+      const data = await uploadImageFile(file, token)
+      if (data?.url) {
+        setPhotoImageUrl(data.url)
+        setAlertMsg({ type: 'success', text: 'Photo uploaded and optimized successfully.' })
         setTimeout(() => setAlertMsg(null), 3000)
-      } else {
-        throw new Error(data.error || 'Failed to upload photo')
       }
     } catch (err: any) {
       setAlertMsg({ type: 'error', text: err.message || 'Image upload failed' })
     } finally {
       setUploadingPhotoFile(false)
+      e.target.value = ''
+    }
+  }
+
+  const handleCmsImageUpload = async (key: string, e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    try {
+      setUploadingCmsKey(key)
+      const token = getToken()
+      const data = await uploadImageFile(file, token)
+      if (data?.url) {
+        setCmsEdits((prev) => ({ ...prev, [key]: data.url }))
+        setAlertMsg({ type: 'success', text: 'Image uploaded! Click "Save Changes" to apply live.' })
+        setTimeout(() => setAlertMsg(null), 4000)
+      }
+    } catch (err: any) {
+      setAlertMsg({ type: 'error', text: err.message || 'Image upload failed' })
+    } finally {
+      setUploadingCmsKey(null)
+      e.target.value = ''
+    }
+  }
+
+  const handleServiceImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    try {
+      setUploadingServiceImage(true)
+      const token = getToken()
+      const data = await uploadImageFile(file, token)
+      if (data?.url) {
+        setServiceImage(data.url)
+        setAlertMsg({ type: 'success', text: 'Banner image uploaded successfully!' })
+        setTimeout(() => setAlertMsg(null), 3000)
+      }
+    } catch (err: any) {
+      setAlertMsg({ type: 'error', text: err.message || 'Image upload failed' })
+    } finally {
+      setUploadingServiceImage(false)
+      e.target.value = ''
     }
   }
 
@@ -1394,18 +1430,55 @@ export default function AdminDashboardPage() {
                         </div>
 
                         {item.type === 'image_url' ? (
-                          <div className="space-y-2">
-                            <input
-                              type="text"
-                              value={cmsEdits[item.key] ?? item.value}
-                              onChange={(e) => setCmsEdits({ ...cmsEdits, [item.key]: e.target.value })}
-                              placeholder="https://..."
-                              className="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs font-mono focus:outline-none focus:border-red-600 text-slate-800"
-                            />
-                            {cmsEdits[item.key] && (
-                              <div className="relative h-24 sm:h-32 rounded-xl overflow-hidden border border-slate-200 bg-slate-900">
+                          <div className="space-y-2.5">
+                            {/* Upload from Phone / Device Button */}
+                            <div className="flex flex-wrap items-center gap-2">
+                              <label
+                                className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold text-white shadow-sm cursor-pointer transition-all active:scale-95 ${
+                                  uploadingCmsKey === item.key
+                                    ? 'bg-red-400 cursor-not-allowed'
+                                    : 'bg-red-600 hover:bg-red-700'
+                                }`}
+                              >
+                                <input
+                                  type="file"
+                                  accept="image/*"
+                                  disabled={uploadingCmsKey === item.key}
+                                  onChange={(e) => handleCmsImageUpload(item.key, e)}
+                                  className="hidden"
+                                />
+                                {uploadingCmsKey === item.key ? (
+                                  <>
+                                    <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                    <span>Uploading &amp; optimizing...</span>
+                                  </>
+                                ) : (
+                                  <>
+                                    <Camera className="w-3.5 h-3.5" />
+                                    <span>Upload from Phone / PC</span>
+                                  </>
+                                )}
+                              </label>
+                              <span className="text-[11px] text-slate-400">Camera or Gallery</span>
+                            </div>
+
+                            <div className="space-y-1">
+                              <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider block">
+                                Or enter / paste image URL
+                              </span>
+                              <input
+                                type="text"
+                                value={cmsEdits[item.key] ?? item.value}
+                                onChange={(e) => setCmsEdits({ ...cmsEdits, [item.key]: e.target.value })}
+                                placeholder="https://... or /api/images/..."
+                                className="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs font-mono focus:outline-none focus:border-red-600 text-slate-800"
+                              />
+                            </div>
+
+                            {(cmsEdits[item.key] ?? item.value) && (
+                              <div className="relative h-28 sm:h-36 rounded-xl overflow-hidden border border-slate-200 bg-slate-900 shadow-inner">
                                 <img
-                                  src={cmsEdits[item.key]}
+                                  src={cmsEdits[item.key] ?? item.value}
                                   alt="Preview"
                                   className="w-full h-full object-cover"
                                   onError={(e) => {
@@ -1413,8 +1486,8 @@ export default function AdminDashboardPage() {
                                       'https://images.unsplash.com/photo-1581092921461-eab62e97a780?auto=format&fit=crop&w=600&q=80'
                                   }}
                                 />
-                                <span className="absolute bottom-1.5 left-1.5 bg-black/60 text-white text-[9px] font-semibold px-2 py-0.5 rounded backdrop-blur-sm">
-                                  Preview
+                                <span className="absolute bottom-1.5 left-1.5 bg-black/70 text-white text-[9px] font-semibold px-2 py-0.5 rounded backdrop-blur-sm">
+                                  Live Preview
                                 </span>
                               </div>
                             )}
@@ -2803,15 +2876,69 @@ export default function AdminDashboardPage() {
                 />
               </div>
 
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">Banner Image URL</label>
-                <input
-                  type="text"
-                  value={serviceImage}
-                  onChange={(e) => setServiceImage(e.target.value)}
-                  placeholder="https://images.unsplash.com/..."
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-mono focus:outline-none focus:border-red-600 text-slate-800"
-                />
+              <div className="space-y-2">
+                <label className="block text-xs font-bold text-slate-700">Service Banner Image</label>
+
+                {/* Upload from Phone / PC Button */}
+                <div className="flex flex-wrap items-center gap-2">
+                  <label
+                    className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold text-white shadow-sm cursor-pointer transition-all active:scale-95 ${
+                      uploadingServiceImage
+                        ? 'bg-red-400 cursor-not-allowed'
+                        : 'bg-red-600 hover:bg-red-700'
+                    }`}
+                  >
+                    <input
+                      type="file"
+                      accept="image/*"
+                      disabled={uploadingServiceImage}
+                      onChange={handleServiceImageUpload}
+                      className="hidden"
+                    />
+                    {uploadingServiceImage ? (
+                      <>
+                        <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        <span>Uploading &amp; optimizing...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Camera className="w-3.5 h-3.5" />
+                        <span>Upload from Phone / PC</span>
+                      </>
+                    )}
+                  </label>
+                  <span className="text-[11px] text-slate-400">Mobile Camera or Gallery</span>
+                </div>
+
+                <div className="space-y-1">
+                  <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider block">
+                    Or enter / paste image URL
+                  </span>
+                  <input
+                    type="text"
+                    value={serviceImage}
+                    onChange={(e) => setServiceImage(e.target.value)}
+                    placeholder="https://... or /api/images/..."
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-mono focus:outline-none focus:border-red-600 text-slate-800"
+                  />
+                </div>
+
+                {serviceImage && (
+                  <div className="relative h-24 sm:h-28 rounded-xl overflow-hidden border border-slate-200 bg-slate-900">
+                    <img
+                      src={serviceImage}
+                      alt="Service Banner Preview"
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        ;(e.target as any).src =
+                          'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=1000&q=80'
+                      }}
+                    />
+                    <span className="absolute bottom-1.5 left-1.5 bg-black/70 text-white text-[9px] font-semibold px-2 py-0.5 rounded backdrop-blur-sm">
+                      Banner Preview
+                    </span>
+                  </div>
+                )}
               </div>
 
               <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/70 space-y-1.5">
@@ -3061,28 +3188,34 @@ export default function AdminDashboardPage() {
                     className="hidden"
                   />
                   {uploadingPhotoFile ? (
-                    <div className="flex items-center gap-2 text-xs font-bold text-red-600 py-2">
+                    <div className="flex items-center gap-2 text-xs font-bold text-red-600 py-3">
                       <div className="w-4 h-4 border-2 border-red-600 border-t-transparent rounded-full animate-spin" />
-                      <span>Uploading photo...</span>
+                      <span>Compressing &amp; uploading photo...</span>
                     </div>
                   ) : (
-                    <div className="flex flex-col items-center gap-1 text-center py-1">
-                      <UploadCloud className="w-7 h-7 text-slate-400" />
-                      <span className="text-xs font-bold text-slate-700">Click to choose image from device</span>
-                      <span className="text-[10px] text-slate-400">JPEG, PNG, WEBP up to 10MB</span>
+                    <div className="flex flex-col items-center gap-1.5 text-center py-2">
+                      <div className="w-10 h-10 rounded-full bg-red-50 text-red-600 flex items-center justify-center">
+                        <Camera className="w-5 h-5" />
+                      </div>
+                      <span className="text-xs font-bold text-slate-800">
+                        Tap to take photo with Camera or pick from Gallery / PC
+                      </span>
+                      <span className="text-[10px] text-slate-400">
+                        Auto-compressed for ultra-fast loading • JPEG, PNG, WEBP
+                      </span>
                     </div>
                   )}
                 </label>
 
                 <div className="relative pt-0.5">
                   <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider block mb-1">
-                    Or paste image URL
+                    Or enter / paste image URL
                   </span>
                   <input
                     type="url"
                     value={photoImageUrl}
                     onChange={(e) => setPhotoImageUrl(e.target.value)}
-                    placeholder="https://images.unsplash.com/... or /uploads/photos/..."
+                    placeholder="https://... or /api/images/..."
                     className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-mono focus:outline-none focus:border-red-600 text-slate-800"
                   />
                 </div>

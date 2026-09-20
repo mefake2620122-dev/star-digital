@@ -211,3 +211,13 @@ model PricingItem {
   updatedAt   DateTime @updatedAt
 }
 
+/// Cloud-stored persistent uploaded images (CMS hero images, service banners, work photos)
+model UploadedImage {
+  id        String   @id @default(cuid())
+  fileName  String
+  mimeType  String
+  data      String   // Base64-encoded optimized image data
+  size      Int      // Size in bytes
+  createdAt DateTime @default(now())
+}
+

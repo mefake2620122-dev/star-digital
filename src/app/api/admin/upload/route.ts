@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
       mimeType: file.type,
     })
   } catch (error: any) {
-    console.error('Photo upload failed:', error)
-    return jsonError(error?.message || 'Failed to upload photo', 'SERVER_ERROR', 500)
+    console.error('File upload failed:', error)
+    return jsonError(error?.message || 'Failed to upload image', 'SERVER_ERROR', 500)
   }
 }
